@@ -19,4 +19,12 @@ public class UserUseCase implements IUserServicePort {
         user.validateIsAdult();
         userPersistencePort.saveUser(user);
     }
+
+    @Override
+    public boolean isOwner(Long userId) {
+        User user = userPersistencePort.findById(userId)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+        return user.getRol().equals(Rol.PROPIETARIO);
+    }
 }
