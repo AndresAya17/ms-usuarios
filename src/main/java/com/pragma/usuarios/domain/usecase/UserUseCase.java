@@ -16,16 +16,17 @@ public class UserUseCase implements IUserServicePort {
 
     @Override
     public void saveUser(User user) {
-        user.setRol(Rol.PROPIETARIO);
         user.validateIsAdult();
+        user.setRol(Rol.PROPIETARIO);
         userPersistencePort.saveUser(user);
     }
 
     @Override
-    public boolean isOwner(Long userId) {
+    public Rol getUserRol(Long userId) {
         User user = userPersistencePort.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException(userId));
 
-        return user.getRol().equals(Rol.PROPIETARIO);
+        return user.getRol();
     }
+
 }
