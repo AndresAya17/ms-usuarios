@@ -1,6 +1,7 @@
 package com.pragma.usuarios.infrastructure.configuration;
 
 import com.pragma.usuarios.domain.api.IUserServicePort;
+import com.pragma.usuarios.domain.spi.IPasswordEncoderPersistencePort;
 import com.pragma.usuarios.domain.spi.IUserPersistencePort;
 import com.pragma.usuarios.domain.usecase.UserUseCase;
 import com.pragma.usuarios.infrastructure.out.jpa.adapter.UserJpaAdapter;
@@ -15,6 +16,7 @@ import org.springframework.context.annotation.Configuration;
 public class BeanConfiguration {
     private final IUserRepository userRepository;
     private final IUserEntityMapper userEntityMapper;
+    private final IPasswordEncoderPersistencePort passwordEncoderPersistencePort;
 
     @Bean
     public IUserPersistencePort userPersistencePort() {
@@ -22,6 +24,6 @@ public class BeanConfiguration {
     }
 
     @Bean
-    public IUserServicePort userServicePort(){ return new UserUseCase(userPersistencePort());
+    public IUserServicePort userServicePort(){ return new UserUseCase(userPersistencePort(), passwordEncoderPersistencePort);
     }
 }
