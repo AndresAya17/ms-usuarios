@@ -12,9 +12,9 @@ public class UserResponseDto {
     private Long id;
     private String firstName;
     private String lastName;
-    private String DocumentNumber;
-    private String PhoneNumber;
-    private LocalDate BirthDate;
+    private String documentNumber;
+    private String phoneNumber;
+    private LocalDate birthDate;
     private String email;
     private String password;
     private Rol rol;

@@ -21,7 +21,7 @@ public class UserRequestDto {
             regexp = "\\d+",
             message = "El documento debe contener solo números"
     )
-    private String DocumentNumber;
+    private String documentNumber;
 
     @NotBlank(message = "El celular es obligatorio")
     @Size(max = 13, message = "El celular no puede tener más de 13 caracteres")
@@ -29,10 +29,10 @@ public class UserRequestDto {
             regexp = "^\\+?\\d{7,13}$",
             message = "El celular debe ser numérico y puede iniciar con +"
     )
-    private String PhoneNumber;
+    private String phoneNumber;
 
     @NotNull(message = "La fecha de nacimiento es obligatoria")
-    private LocalDate BirthDate;
+    private LocalDate birthDate;
 
     @NotBlank(message = "El email es obligatorio")
     @Email(message = "El email no tiene un formato válido")

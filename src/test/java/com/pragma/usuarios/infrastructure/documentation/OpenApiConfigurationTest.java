@@ -4,11 +4,14 @@ import io.swagger.v3.oas.models.OpenAPI;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@SpringBootTest
+@SpringJUnitConfig
+@ContextConfiguration(classes = OpenApiConfiguration.class)
 @TestPropertySource(properties = {
         "appdescription=API de Users para pruebas",
         "appversion=1.0.0-test"
