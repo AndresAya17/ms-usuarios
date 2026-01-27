@@ -1,6 +1,7 @@
 package com.pragma.usuarios.domain.usecase;
 
 import com.pragma.usuarios.domain.api.IUserServicePort;
+import com.pragma.usuarios.domain.exception.UserNotFoundException;
 import com.pragma.usuarios.domain.model.Rol;
 import com.pragma.usuarios.domain.model.User;
 import com.pragma.usuarios.domain.spi.IUserPersistencePort;
@@ -23,7 +24,7 @@ public class UserUseCase implements IUserServicePort {
     @Override
     public boolean isOwner(Long userId) {
         User user = userPersistencePort.findById(userId)
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+                .orElseThrow(() -> new UserNotFoundException(userId));
 
         return user.getRol().equals(Rol.PROPIETARIO);
     }
