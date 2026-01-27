@@ -5,6 +5,6 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class IsOwnerResponseDto {
-    private Boolean isOwner;
+public class RolUerResponseDto {
+    private String rol;
 }

@@ -1,9 +1,11 @@
 package com.pragma.usuarios.application.handler.impl;
 
 import com.pragma.usuarios.application.dto.request.UserRequestDto;
+import com.pragma.usuarios.application.dto.response.RolUerResponseDto;
 import com.pragma.usuarios.application.handler.IUserHandler;
 import com.pragma.usuarios.application.mapper.IUserRequestMapper;
 import com.pragma.usuarios.domain.api.IUserServicePort;
+import com.pragma.usuarios.domain.model.Rol;
 import com.pragma.usuarios.domain.model.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -24,7 +26,9 @@ public class UserHandler implements IUserHandler {
     }
 
     @Override
-    public boolean isOwner(Long userId) {
-        return userServicePort.isOwner(userId);
+    public RolUerResponseDto getUserRol(Long userId) {
+        Rol rol = userServicePort.getUserRol(userId);
+        return new RolUerResponseDto(rol.name());
     }
+
 }

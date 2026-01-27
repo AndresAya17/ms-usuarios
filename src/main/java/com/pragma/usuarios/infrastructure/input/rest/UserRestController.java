@@ -1,7 +1,7 @@
 package com.pragma.usuarios.infrastructure.input.rest;
 
 import com.pragma.usuarios.application.dto.request.UserRequestDto;
-import com.pragma.usuarios.application.dto.response.IsOwnerResponseDto;
+import com.pragma.usuarios.application.dto.response.RolUerResponseDto;
 import com.pragma.usuarios.application.handler.IUserHandler;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -32,9 +32,8 @@ public class UserRestController {
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<IsOwnerResponseDto> isOwner(@PathVariable Long id) {
-        boolean result = userHandler.isOwner(id);
-        return ResponseEntity.ok(new IsOwnerResponseDto(result));
+    @GetMapping("/{id}/rol")
+    public ResponseEntity<RolUerResponseDto> getUserRol(@PathVariable Long id) {
+        return ResponseEntity.ok(userHandler.getUserRol(id));
     }
 }
