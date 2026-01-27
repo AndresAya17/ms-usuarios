@@ -3,6 +3,7 @@ package com.pragma.usuarios.domain.usecase;
 import com.pragma.usuarios.domain.exception.UnderageUserException;
 import com.pragma.usuarios.domain.model.Rol;
 import com.pragma.usuarios.domain.model.User;
+import com.pragma.usuarios.domain.spi.IPasswordEncoderPersistencePort;
 import com.pragma.usuarios.domain.spi.IUserPersistencePort;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -21,11 +22,14 @@ public class UserUseCaseTest {
     @Mock
     private IUserPersistencePort propietarioPersistencePort;
 
+    @Mock
+    private IPasswordEncoderPersistencePort passwordEncoderPersistencePort;
+
     private UserUseCase usuarioUseCase;
 
     @BeforeEach
     void setUp() {
-        usuarioUseCase = new UserUseCase(propietarioPersistencePort);
+        usuarioUseCase = new UserUseCase(propietarioPersistencePort, passwordEncoderPersistencePort);
     }
 
     @Test

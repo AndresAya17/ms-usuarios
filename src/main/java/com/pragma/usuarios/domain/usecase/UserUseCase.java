@@ -4,13 +4,16 @@ import com.pragma.usuarios.domain.api.IUserServicePort;
 import com.pragma.usuarios.domain.exception.UserNotFoundException;
 import com.pragma.usuarios.domain.model.Rol;
 import com.pragma.usuarios.domain.model.User;
+import com.pragma.usuarios.domain.spi.IPasswordEncoderPersistencePort;
 import com.pragma.usuarios.domain.spi.IUserPersistencePort;
 
 public class UserUseCase implements IUserServicePort {
     private final IUserPersistencePort userPersistencePort;
+    private final IPasswordEncoderPersistencePort passwordEncoderPersistencePort;
 
-    public UserUseCase(IUserPersistencePort userPersistencePort){
+    public UserUseCase(IUserPersistencePort userPersistencePort, IPasswordEncoderPersistencePort passwordEncoderPersistencePort){
         this.userPersistencePort = userPersistencePort;
+        this.passwordEncoderPersistencePort = passwordEncoderPersistencePort;
     }
 
 
@@ -18,6 +21,10 @@ public class UserUseCase implements IUserServicePort {
     public void saveUser(User user) {
         user.validateIsAdult();
         user.setRol(Rol.PROPIETARIO);
+        String encryptedPassword =
+                passwordEncoderPersistencePort.encode(user.getPassword());
+
+        user.setPassword(encryptedPassword);
         userPersistencePort.saveUser(user);
     }
 
