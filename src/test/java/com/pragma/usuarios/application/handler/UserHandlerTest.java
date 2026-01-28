@@ -34,7 +34,7 @@ public class UserHandlerTest {
                 .thenReturn(user);
 
         // Act
-        usuarioHandler.saveUser(requestDto);
+        usuarioHandler.saveOwner(requestDto);
 
         // Assert
         verify(propietarioRequestMapper, times(1))

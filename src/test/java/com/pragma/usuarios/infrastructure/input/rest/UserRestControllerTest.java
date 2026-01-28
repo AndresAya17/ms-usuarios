@@ -40,7 +40,7 @@ public class UserRestControllerTest {
         dto.setEmail("juan@email.com");
         dto.setPassword("password123");
 
-        doNothing().when(usuarioHandler).saveUser(dto);
+        doNothing().when(usuarioHandler).saveOwner(dto);
 
         // Act + Assert
         mockMvc.perform(
