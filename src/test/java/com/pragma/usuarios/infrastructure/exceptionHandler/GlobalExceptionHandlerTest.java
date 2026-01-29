@@ -1,6 +1,7 @@
 package com.pragma.usuarios.infrastructure.exceptionHandler;
 
 import com.pragma.usuarios.domain.exception.UnderageUserException;
+import com.pragma.usuarios.domain.exception.UserNotFoundByEmailException;
 import com.pragma.usuarios.domain.exception.UserNotFoundException;
 import com.pragma.usuarios.infrastructure.exceptionhandler.GlobalExceptionHandler;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,6 +18,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public class GlobalExceptionHandlerTest {
+
     private MockMvc mockMvc;
 
     @BeforeEach
@@ -31,7 +33,7 @@ public class GlobalExceptionHandlerTest {
 
         @GetMapping("/user-not-found")
         void userNotFound() {
-            throw new UserNotFoundException(99L);
+            throw new UserNotFoundByEmailException("Invalid credentials");
         }
 
         @GetMapping("/underage-user")
@@ -42,19 +44,17 @@ public class GlobalExceptionHandlerTest {
 
     @Test
     void shouldReturn404WhenUserNotFoundExceptionIsThrown() throws Exception {
-        mockMvc.perform(get("/user-not-found")
-                        .accept(MediaType.APPLICATION_JSON))
+        mockMvc.perform(get("/user-not-found").accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.message")
-                        .value(containsString("User with id 99 not found")));
+                        .value(containsString("Invalid credentials")));
     }
 
     @Test
     void shouldReturn403WhenUnderageUserExceptionIsThrown() throws Exception {
-        mockMvc.perform(get("/underage-user")
-                        .accept(MediaType.APPLICATION_JSON))
+        mockMvc.perform(get("/underage-user"))
                 .andExpect(status().isForbidden())
                 .andExpect(jsonPath("$.message")
-                        .value(containsString("mayor de edad")));
+                        .value(containsString("18 years old")));
     }
 }

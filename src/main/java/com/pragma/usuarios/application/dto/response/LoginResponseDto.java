@@ -3,8 +3,12 @@ package com.pragma.usuarios.application.dto.response;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-@Getter
 @AllArgsConstructor
-public class RolUerResponseDto {
+@Getter
+public class LoginResponseDto {
+
+    private Long userId;
+    private String email;
     private String rol;
+    private String token;
 }

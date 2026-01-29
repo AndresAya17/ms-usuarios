@@ -34,32 +34,44 @@ public class UserUseCaseTest {
 
     @Test
     void deberiaAsignarRolPropietarioYGuardarUserCuandoEsMayorDeEdad() {
-        // Arrange
         User user = new User();
+        user.setFirstName("Juan");
+        user.setLastName("Perez");
+        user.setDocumentNumber("123456789");
+        user.setPhoneNumber("3001234567");
+        user.setEmail("juan@email.com");
+        user.setPassword("password123");
         user.setBirthDate(LocalDate.now().minusYears(25));
 
-        // Act
-        usuarioUseCase.saveUser(user);
+        String rol = Rol.ADMINISTRADOR.name();
+        when(passwordEncoderPersistencePort.encode("password123"))
+                .thenReturn("encryptedPassword");
 
-        // Assert
+        usuarioUseCase.saveUser(user,rol);
+
         assertEquals(Rol.PROPIETARIO, user.getRol());
-        verify(propietarioPersistencePort, times(1))
-                .saveUser(user);
+        verify(passwordEncoderPersistencePort).encode("password123");
+        verify(propietarioPersistencePort).saveUser(user);
     }
 
     @Test
     void noDeberiaGuardarUserCuandoEsMenorDeEdad() {
-        // Arrange
         User user = new User();
+        user.setFirstName("Juan");
+        user.setLastName("Perez");
+        user.setDocumentNumber("123456789");
+        user.setPhoneNumber("3001234567");
+        user.setEmail("juan@email.com");
+        user.setPassword("password123");
         user.setBirthDate(LocalDate.now().minusYears(16));
+        String rol = Rol.ADMINISTRADOR.name();
 
-        // Act + Assert
         assertThrows(
                 UnderageUserException.class,
-                () -> usuarioUseCase.saveUser(user)
+                () -> usuarioUseCase.saveUser(user, rol)
         );
 
-        verify(propietarioPersistencePort, never())
-                .saveUser(any());
+        verify(propietarioPersistencePort, never()).saveUser(any());
+        verify(passwordEncoderPersistencePort, never()).encode(any());
     }
 }

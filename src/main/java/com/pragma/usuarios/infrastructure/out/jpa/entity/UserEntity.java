@@ -22,7 +22,7 @@ public class UserEntity {
     private Long id;
 
     @Column(nullable = false)
-    private String firstName    ;
+    private String firstName;
 
     @Column(nullable = false)
     private String lastName;
@@ -33,7 +33,6 @@ public class UserEntity {
     @Column(nullable = false)
     private String PhoneNumber;
 
-    @Column(nullable = false)
     private LocalDate BirthDate;
 
     @Column(nullable = false)

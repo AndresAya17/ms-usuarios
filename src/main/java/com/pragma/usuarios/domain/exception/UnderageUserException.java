@@ -1,7 +1,7 @@
 package com.pragma.usuarios.domain.exception;
 
-public class UnderageUserException extends RuntimeException{
+public class UnderageUserException extends DomainException{
     public UnderageUserException() {
-        super("El usuario debe ser mayor de edad");
+        super("User must be at least 18 years old");
     }
 }
