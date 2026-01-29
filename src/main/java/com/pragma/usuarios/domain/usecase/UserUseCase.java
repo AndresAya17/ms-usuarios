@@ -6,6 +6,7 @@ import com.pragma.usuarios.domain.model.Rol;
 import com.pragma.usuarios.domain.model.User;
 import com.pragma.usuarios.domain.spi.IPasswordEncoderPersistencePort;
 import com.pragma.usuarios.domain.spi.IUserPersistencePort;
+import com.pragma.usuarios.infrastructure.exception.UnauthorizedException;
 
 public class UserUseCase implements IUserServicePort {
     private final IUserPersistencePort userPersistencePort;
@@ -18,8 +19,11 @@ public class UserUseCase implements IUserServicePort {
 
 
     @Override
-    public void saveUser(User user) {
-        user.validateIsAdult();
+    public void saveUser(User user, String rol) {
+        if (!Rol.ADMINISTRADOR.name().equals(rol)){
+            throw new UnauthorizedException("You don't have permissions");
+        }
+        user.validateOwner();
         user.setRol(Rol.PROPIETARIO);
         String encryptedPassword =
                 passwordEncoderPersistencePort.encode(user.getPassword());
@@ -28,12 +32,5 @@ public class UserUseCase implements IUserServicePort {
         userPersistencePort.saveUser(user);
     }
 
-    @Override
-    public Rol getUserRol(Long userId) {
-        User user = userPersistencePort.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException(userId));
-
-        return user.getRol();
-    }
 
 }

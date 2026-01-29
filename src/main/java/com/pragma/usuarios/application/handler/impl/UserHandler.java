@@ -20,25 +20,12 @@ public class UserHandler implements IUserHandler {
 
     private final IUserServicePort userServicePort;
     private final IUserRequestMapper userRequestMapper;
-    private final HttpServletRequest request;
 
     @Override
-    public void saveOwner(UserRequestDto userRequestDto) {
-        String rol = (String) request.getAttribute("auth.rol");
-
-        if (!Rol.ADMINISTRADOR.name().equals(rol)) {
-            throw new UnauthorizedException(
-                    "Solo un administrador puede crear propietarios"
-            );
-        }
+    public void saveOwner(UserRequestDto userRequestDto, String rol) {
         User user = userRequestMapper.toUser(userRequestDto);
-        userServicePort.saveUser(user);
+        userServicePort.saveUser(user, rol);
     }
 
-    @Override
-    public RolUserResponseDto getUserRol(Long userId) {
-        Rol rol = userServicePort.getUserRol(userId);
-        return new RolUserResponseDto(rol.name());
-    }
 
 }

@@ -1,7 +1,6 @@
 package com.pragma.usuarios.infrastructure.input.rest;
 
 import com.pragma.usuarios.application.dto.request.UserRequestDto;
-import com.pragma.usuarios.application.dto.response.RolUserResponseDto;
 import com.pragma.usuarios.application.handler.IUserHandler;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -27,13 +26,10 @@ public class UserRestController {
             @ApiResponse(responseCode = "409", description = "User already exists", content = @Content)
     })
     @PostMapping("/owner")
-    public ResponseEntity<Void> saveOwner(@Valid @RequestBody UserRequestDto userRequestDto) {
-        userHandler.saveOwner(userRequestDto);
+    public ResponseEntity<Void> saveOwner(
+            @RequestAttribute("auth.rol") String rol,
+            @Valid @RequestBody UserRequestDto userRequestDto) {
+        userHandler.saveOwner(userRequestDto, rol);
         return new ResponseEntity<>(HttpStatus.CREATED);
-    }
-
-    @GetMapping("/{id}/rol")
-    public ResponseEntity<RolUserResponseDto> getUserRol(@PathVariable Long id) {
-        return ResponseEntity.ok(userHandler.getUserRol(id));
     }
 }

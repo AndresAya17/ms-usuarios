@@ -22,7 +22,7 @@ public class UserEntity {
     private Long id;
 
     @Column(nullable = false)
-    private String firstName    ;
+    private String firstName;
 
     @Column(nullable = false)
     private String lastName;

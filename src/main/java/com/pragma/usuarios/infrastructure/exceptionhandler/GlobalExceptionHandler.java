@@ -1,5 +1,6 @@
 package com.pragma.usuarios.infrastructure.exceptionhandler;
 
+import com.pragma.usuarios.domain.exception.DomainException;
 import com.pragma.usuarios.domain.exception.InvalidDataException;
 import com.pragma.usuarios.domain.exception.UnderageUserException;
 import com.pragma.usuarios.domain.exception.UserNotFoundByEmailException;
@@ -11,6 +12,14 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+    @ExceptionHandler(DomainException.class)
+    public ResponseEntity<ErrorResponse> handleDomainException(
+            DomainException ex) {
+
+        return ResponseEntity
+                .badRequest()
+                .body(new ErrorResponse(ex.getMessage()));
+    }
     @ExceptionHandler(UserNotFoundByEmailException.class)
     public ResponseEntity<ErrorResponse> handleUserNotFound(
             UserNotFoundByEmailException ex
@@ -26,14 +35,6 @@ public class GlobalExceptionHandler {
     ){
         return ResponseEntity
                 .status(HttpStatus.FORBIDDEN)
-                .body(new ErrorResponse(ex.getMessage()));
-    }
-    @ExceptionHandler(InvalidDataException.class)
-    public ResponseEntity<ErrorResponse> handleInvalidData(
-            InvalidDataException ex
-    ){
-        return ResponseEntity
-                .status(HttpStatus.BAD_REQUEST)
                 .body(new ErrorResponse(ex.getMessage()));
     }
     @ExceptionHandler(UnauthorizedException.class)

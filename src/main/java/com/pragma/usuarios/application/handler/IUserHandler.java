@@ -4,6 +4,5 @@ import com.pragma.usuarios.application.dto.request.UserRequestDto;
 import com.pragma.usuarios.application.dto.response.RolUserResponseDto;
 
 public interface IUserHandler {
-    void saveOwner(UserRequestDto userRequestDto);
-    RolUserResponseDto getUserRol(Long userId);
+    void saveOwner(UserRequestDto userRequestDto, String rol);
 }
