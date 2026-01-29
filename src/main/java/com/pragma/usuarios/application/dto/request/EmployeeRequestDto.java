@@ -1,8 +1,9 @@
 package com.pragma.usuarios.application.dto.request;
 
 import jakarta.validation.constraints.*;
+import lombok.Setter;
 
-
+@Setter
 public class EmployeeRequestDto {
     @NotBlank(message = "El FirstName es obligatorio")
     private String firstName;
