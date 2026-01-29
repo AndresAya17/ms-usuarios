@@ -1,7 +1,6 @@
 package com.pragma.usuarios.domain.usecase;
 
 import com.pragma.usuarios.domain.api.IUserServicePort;
-import com.pragma.usuarios.domain.exception.UserNotFoundException;
 import com.pragma.usuarios.domain.model.Rol;
 import com.pragma.usuarios.domain.model.User;
 import com.pragma.usuarios.domain.spi.IPasswordEncoderPersistencePort;

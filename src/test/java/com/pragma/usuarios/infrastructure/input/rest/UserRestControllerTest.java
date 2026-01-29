@@ -3,8 +3,10 @@ package com.pragma.usuarios.infrastructure.input.rest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pragma.usuarios.application.dto.request.UserRequestDto;
 import com.pragma.usuarios.application.handler.IUserHandler;
+import com.pragma.usuarios.domain.spi.IJwtPersistencePort;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
@@ -17,7 +19,11 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(UserRestController.class)
-public class UserRestControllerTest {
+@AutoConfigureMockMvc(addFilters = false)
+class UserRestControllerTest {
+
+    @MockBean
+    private IJwtPersistencePort jwtPersistencePort;
 
     @Autowired
     private MockMvc mockMvc;
@@ -30,7 +36,6 @@ public class UserRestControllerTest {
 
     @Test
     void deberiaRetornar201CuandoRequestEsValido() throws Exception {
-        // Arrange
         UserRequestDto dto = new UserRequestDto();
         dto.setFirstName("Juan");
         dto.setLastName("Perez");
@@ -40,11 +45,13 @@ public class UserRestControllerTest {
         dto.setEmail("juan@email.com");
         dto.setPassword("password123");
 
-        doNothing().when(usuarioHandler).saveOwner(dto);
+        String rol = "ADMINISTRADOR";
 
-        // Act + Assert
+        doNothing().when(usuarioHandler).saveOwner(dto, rol);
+
         mockMvc.perform(
-                post("/api/v1/usuario/")
+                post("/api/v1/usuario/owner")
+                        .requestAttr("auth.rol", "ADMINISTRADOR")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(dto))
         ).andExpect(status().isCreated());
@@ -52,12 +59,11 @@ public class UserRestControllerTest {
 
     @Test
     void deberiaRetornar400CuandoRequestEsInvalido() throws Exception {
-        // Arrange
-        UserRequestDto dto = new UserRequestDto(); // vacío → inválido
+        UserRequestDto dto = new UserRequestDto();
 
-        // Act + Assert
         mockMvc.perform(
-                post("/api/v1/usuario/")
+                post("/api/v1/usuario/owner") // ✅ URL correcta
+                        .requestAttr("auth.rol", "ADMINISTRADOR") // ✅ atributo requerido
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(dto))
         ).andExpect(status().isBadRequest());

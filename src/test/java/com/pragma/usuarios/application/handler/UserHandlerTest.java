@@ -14,36 +14,35 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-public class UserHandlerTest {
+class UserHandlerTest {
     @Mock
-    private IUserServicePort propietarioServicePort;
+    private IUserServicePort userServicePort;
 
     @Mock
-    private IUserRequestMapper propietarioRequestMapper;
+    private IUserRequestMapper userRequestMapper;
 
     @InjectMocks
-    private UserHandler usuarioHandler;
+    private UserHandler userHandler;
 
     @Test
     void deberiaMapearYGuardarUserCorrectamente() {
-        // Arrange
         UserRequestDto requestDto = new UserRequestDto();
         User user = new User();
+        String rol = "OWNER";
 
-        when(propietarioRequestMapper.toUser(requestDto))
+        when(userRequestMapper.toUser(requestDto))
                 .thenReturn(user);
 
-        // Act
-        usuarioHandler.saveOwner(requestDto);
+        userHandler.saveOwner(requestDto, rol);
 
         // Assert
-        verify(propietarioRequestMapper, times(1))
+        verify(userRequestMapper, times(1))
                 .toUser(requestDto);
 
-        verify(propietarioServicePort, times(1))
-                .saveUser(user);
+        verify(userServicePort, times(1))
+                .saveUser(user, rol);
 
-        verifyNoMoreInteractions(propietarioRequestMapper, propietarioServicePort);
+        verifyNoMoreInteractions(userRequestMapper, userServicePort);
     }
 
 }

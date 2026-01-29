@@ -25,7 +25,7 @@ public class GlobalExceptionHandler {
             UserNotFoundByEmailException ex
     ){
         return ResponseEntity
-                .status(HttpStatus.UNAUTHORIZED)
+                .status(HttpStatus.NOT_FOUND)
                 .body(new ErrorResponse(ex.getMessage()));
     }
 
