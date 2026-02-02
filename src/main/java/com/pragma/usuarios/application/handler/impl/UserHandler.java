@@ -26,6 +26,12 @@ public class UserHandler implements IUserHandler {
     }
 
     @Override
+    public void saveClient(UserRequestDto userRequestDto) {
+        User user = userRequestMapper.toUser(userRequestDto);
+        userServicePort.saveClient(user);
+    }
+
+    @Override
     public EmployeeResponseDto saveEmployee(EmployeeRequestDto employeeRequestDto) {
         String rol = employeeRequestDto.getRol();
         User user = userRequestMapper.employeeToUser(employeeRequestDto);

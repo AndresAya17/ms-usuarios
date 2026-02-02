@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("/api/v1/usuario")
+@RequestMapping("/api/v1/user")
 @RequiredArgsConstructor
 public class UserRestController {
 
@@ -32,6 +32,13 @@ public class UserRestController {
             @RequestAttribute("auth.rol") String rol,
             @Valid @RequestBody UserRequestDto userRequestDto) {
         userHandler.saveOwner(userRequestDto, rol);
+        return new ResponseEntity<>(HttpStatus.CREATED);
+    }
+
+    @PostMapping("/client")
+    public ResponseEntity<Void> saveClient(
+            @Valid @RequestBody UserRequestDto userRequestDto) {
+        userHandler.saveClient(userRequestDto);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 

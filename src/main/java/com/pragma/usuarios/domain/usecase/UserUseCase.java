@@ -33,6 +33,16 @@ public class UserUseCase implements IUserServicePort {
     }
 
     @Override
+    public void saveClient(User user) {
+        user.setRol(Rol.CLIENTE);
+        String encryptedPassword =
+                passwordEncoderPersistencePort.encode(user.getPassword());
+
+        user.setPassword(encryptedPassword);
+        userPersistencePort.saveUser(user);
+    }
+
+    @Override
     public Long saveEmployee(User employee, String rol) {
         if (!Rol.PROPIETARIO.name().equals(rol)){
             throw new DomainException(ErrorCode.UNAUTHORIZED, "You don't have permissions");

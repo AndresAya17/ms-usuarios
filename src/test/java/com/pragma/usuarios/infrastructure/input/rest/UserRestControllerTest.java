@@ -29,7 +29,7 @@ class UserRestControllerTest {
     private MockMvc mockMvc;
 
     @MockBean
-    private IUserHandler usuarioHandler;
+    private IUserHandler userHandler;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -47,10 +47,10 @@ class UserRestControllerTest {
 
         String rol = "ADMINISTRADOR";
 
-        doNothing().when(usuarioHandler).saveOwner(dto, rol);
+        doNothing().when(userHandler).saveOwner(dto, rol);
 
         mockMvc.perform(
-                post("/api/v1/usuario/owner")
+                post("/api/v1/user/owner")
                         .requestAttr("auth.rol", "ADMINISTRADOR")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(dto))
@@ -62,8 +62,8 @@ class UserRestControllerTest {
         UserRequestDto dto = new UserRequestDto();
 
         mockMvc.perform(
-                post("/api/v1/usuario/owner") // ✅ URL correcta
-                        .requestAttr("auth.rol", "ADMINISTRADOR") // ✅ atributo requerido
+                post("/api/v1/user/owner")
+                        .requestAttr("auth.rol", "ADMINISTRADOR")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(dto))
         ).andExpect(status().isBadRequest());
