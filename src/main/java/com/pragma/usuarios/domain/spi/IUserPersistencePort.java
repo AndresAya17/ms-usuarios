@@ -7,6 +7,8 @@ import java.util.Optional;
 public interface IUserPersistencePort {
     User saveUser(User user);
 
+    Long saveEmployee(User user);
+
     Optional<User> findById(Long id);
 
     Optional<User> findByEmail(String email);

@@ -2,8 +2,8 @@ package com.pragma.usuarios.domain.usecase;
 
 import com.pragma.usuarios.application.dto.response.LoginResponseDto;
 import com.pragma.usuarios.domain.api.ILoginServicePort;
-import com.pragma.usuarios.domain.exception.InvalidDataException;
-import com.pragma.usuarios.domain.exception.UserNotFoundByEmailException;
+import com.pragma.usuarios.domain.exception.DomainException;
+import com.pragma.usuarios.domain.exception.ErrorCode;
 import com.pragma.usuarios.domain.model.User;
 import com.pragma.usuarios.domain.spi.IJwtPersistencePort;
 import com.pragma.usuarios.domain.spi.IPasswordEncoderPersistencePort;
@@ -25,10 +25,10 @@ public class LoginUseCase implements ILoginServicePort {
     public LoginResponseDto login(String email, String password) {
 
         User user = userPersistencePort.findByEmail(email)
-                .orElseThrow(() -> new UserNotFoundByEmailException(email));
+                .orElseThrow(() -> new DomainException(ErrorCode.DATA_NOT_FOUND, "User not found"));
 
         if (!passwordEncoderPersistencePort.matches(password, user.getPassword())) {
-            throw new InvalidDataException();
+            throw new DomainException(ErrorCode.INVALID_USER, "Email or Password incorrect");
         }
 
         String token = jwtPersistencePort.generateToken(

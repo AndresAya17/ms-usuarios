@@ -34,10 +34,18 @@ class UserTest {
         User user = buildValidUser();
         user.setBirthDate(LocalDate.now().minusYears(16));
 
-        assertThrows(UnderageUserException.class, user::validateIsAdult);
+        DomainException exception = assertThrows(
+                DomainException.class,
+                user::validateIsAdult
+        );
+
+        assertEquals(ErrorCode.INVALID_USER, exception.getErrorCode());
+        assertEquals(
+                "User must be at least 18 years old",
+                exception.getMessage()
+        );
     }
 
-    // ---------- validateDocumentNumber ----------
 
     @Test
     void shouldNotThrowExceptionWhenDocumentNumberIsValid() {
@@ -51,10 +59,18 @@ class UserTest {
         User user = buildValidUser();
         user.setDocumentNumber("ABC123");
 
-        assertThrows(InvalidDocumentException.class, user::validateDocumentNumber);
+        DomainException exception = assertThrows(
+                DomainException.class,
+                user::validateDocumentNumber
+        );
+
+        assertEquals(ErrorCode.INVALID_USER, exception.getErrorCode());
+        assertEquals(
+                "User document format is invalid",
+                exception.getMessage()
+        );
     }
 
-    // ---------- validatePhoneNumber ----------
 
     @Test
     void shouldNotThrowExceptionWhenPhoneNumberIsValid() {
@@ -68,10 +84,18 @@ class UserTest {
         User user = buildValidUser();
         user.setPhoneNumber("ABC123");
 
-        assertThrows(InvalidPhoneNumberException.class, user::validatePhoneNumber);
+        DomainException exception = assertThrows(
+                DomainException.class,
+                user::validatePhoneNumber
+        );
+
+        assertEquals(ErrorCode.INVALID_USER, exception.getErrorCode());
+        assertEquals(
+                "User phone format is invalid",
+                exception.getMessage()
+        );
     }
 
-    // ---------- validateEmail ----------
 
     @Test
     void shouldNotThrowExceptionWhenEmailIsValid() {
@@ -85,10 +109,18 @@ class UserTest {
         User user = buildValidUser();
         user.setEmail("invalid-email");
 
-        assertThrows(InvalidEmailException.class, user::validateEmail);
+        DomainException exception = assertThrows(
+                DomainException.class,
+                user::validateEmail
+        );
+
+        assertEquals(ErrorCode.INVALID_USER, exception.getErrorCode());
+        assertEquals(
+                "User email format is invalid",
+                exception.getMessage()
+        );
     }
 
-    // ---------- validatePassword ----------
 
     @Test
     void shouldNotThrowExceptionWhenPasswordIsValid() {
@@ -102,7 +134,16 @@ class UserTest {
         User user = buildValidUser();
         user.setPassword(null);
 
-        assertThrows(WeakPasswordException.class, user::validatePassword);
+        DomainException exception = assertThrows(
+                DomainException.class,
+                user::validatePassword
+        );
+
+        assertEquals(ErrorCode.INVALID_USER, exception.getErrorCode());
+        assertEquals(
+                "Password must have at least the minimum required length",
+                exception.getMessage()
+        );
     }
 
     @Test
@@ -110,7 +151,16 @@ class UserTest {
         User user = buildValidUser();
         user.setPassword("123");
 
-        assertThrows(WeakPasswordException.class, user::validatePassword);
+        DomainException exception = assertThrows(
+                DomainException.class,
+                user::validatePassword
+        );
+
+        assertEquals(ErrorCode.INVALID_USER, exception.getErrorCode());
+        assertEquals(
+                "Password must have at least the minimum required length",
+                exception.getMessage()
+        );
     }
 
     @Test
@@ -134,9 +184,16 @@ class UserTest {
         user.setBirthDate(LocalDate.now().minusYears(17));
         user.setRol(Rol.PROPIETARIO);
 
-        assertThrows(
-                UnderageUserException.class,
-                user::validateIsAdult);
+        DomainException exception = assertThrows(
+                DomainException.class,
+                user::validateIsAdult
+        );
+
+        assertEquals(ErrorCode.INVALID_USER, exception.getErrorCode());
+        assertEquals(
+                "User must be at least 18 years old",
+                exception.getMessage()
+        );
     }
 
 }

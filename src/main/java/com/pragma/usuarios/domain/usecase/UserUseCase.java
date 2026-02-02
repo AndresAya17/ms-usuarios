@@ -1,11 +1,12 @@
 package com.pragma.usuarios.domain.usecase;
 
 import com.pragma.usuarios.domain.api.IUserServicePort;
+import com.pragma.usuarios.domain.exception.DomainException;
+import com.pragma.usuarios.domain.exception.ErrorCode;
 import com.pragma.usuarios.domain.model.Rol;
 import com.pragma.usuarios.domain.model.User;
 import com.pragma.usuarios.domain.spi.IPasswordEncoderPersistencePort;
 import com.pragma.usuarios.domain.spi.IUserPersistencePort;
-import com.pragma.usuarios.infrastructure.exception.UnauthorizedException;
 
 public class UserUseCase implements IUserServicePort {
     private final IUserPersistencePort userPersistencePort;
@@ -20,7 +21,7 @@ public class UserUseCase implements IUserServicePort {
     @Override
     public void saveUser(User user, String rol) {
         if (!Rol.ADMINISTRADOR.name().equals(rol)){
-            throw new UnauthorizedException("You don't have permissions");
+            throw new DomainException(ErrorCode.UNAUTHORIZED, "You don't have permissions");
         }
         user.validateOwner();
         user.setRol(Rol.PROPIETARIO);
@@ -29,6 +30,21 @@ public class UserUseCase implements IUserServicePort {
 
         user.setPassword(encryptedPassword);
         userPersistencePort.saveUser(user);
+    }
+
+    @Override
+    public Long saveEmployee(User employee, String rol) {
+        if (!Rol.PROPIETARIO.name().equals(rol)){
+            throw new DomainException(ErrorCode.UNAUTHORIZED, "You don't have permissions");
+        }
+        employee.setRol(Rol.EMPLEADO);
+        employee.validateEmployee();
+        String encryptedPassword =
+                passwordEncoderPersistencePort.encode(employee.getPassword());
+
+        employee.setPassword(encryptedPassword);
+        return userPersistencePort.saveEmployee(employee);
+
     }
 
 

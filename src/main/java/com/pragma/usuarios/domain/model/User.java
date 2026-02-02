@@ -29,30 +29,30 @@ public class User {
     public void validateIsAdult() {
         int age = Period.between(birthDate, LocalDate.now()).getYears();
         if (age < DomainConstants.MINIMUM_ADULT_AGE) {
-            throw new UnderageUserException();
+            throw new DomainException(ErrorCode.INVALID_USER, "User must be at least 18 years old");
         }
     }
     public void validateDocumentNumber() {
         if (!documentNumber.matches(DomainConstants.DOCUMENT_NUMBER_REGEX)) {
-            throw new InvalidDocumentException();
+            throw new DomainException(ErrorCode.INVALID_USER, "User document format is invalid" );
         }
     }
 
     public void validatePhoneNumber() {
         if (!phoneNumber.matches(DomainConstants.PHONE_NUMBER_REGEX)) {
-            throw new InvalidPhoneNumberException();
+            throw new DomainException(ErrorCode.INVALID_USER, "User phone format is invalid");
         }
     }
 
     public void validateEmail() {
         if (!Pattern.matches(DomainConstants.EMAIL_REGEX, email)) {
-            throw new InvalidEmailException();
+            throw new DomainException(ErrorCode.INVALID_USER, "User email format is invalid");
         }
     }
 
     public void validatePassword() {
         if (password == null || password.length() < DomainConstants.MIN_PASSWORD_LENGTH) {
-            throw new WeakPasswordException();
+            throw new DomainException(ErrorCode.INVALID_USER, "Password must have at least the minimum required length");
         }
     }
 
