@@ -28,10 +28,20 @@ class UserUseCaseTest {
 
     private UserUseCase userUseCase;
 
+    private User user;
+
+
     @BeforeEach
     void setUp() {
-        userUseCase = new UserUseCase(userPersistencePort, passwordEncoderPersistencePort);
+        user = new User();
+        user.setPassword("plainPassword123");
+
+        userUseCase = new UserUseCase(
+                userPersistencePort,
+                passwordEncoderPersistencePort
+        );
     }
+
 
     @Test
     void deberiaAsignarRolPropietarioYGuardarUserCuandoEsMayorDeEdad() {
@@ -128,5 +138,30 @@ class UserUseCaseTest {
 
         verify(passwordEncoderPersistencePort).encode("plainPassword");
         verify(userPersistencePort).saveEmployee(employee);
+    }
+
+    @Test
+    void shouldSaveClientWithEncryptedPasswordAndClientRole() {
+        // arrange
+        String encryptedPassword = "encryptedPassword123";
+
+        when(passwordEncoderPersistencePort.encode("plainPassword123"))
+                .thenReturn(encryptedPassword);
+
+        // act
+        userUseCase.saveClient(user);
+
+        // assert
+        assertEquals(Rol.CLIENTE, user.getRol());
+        assertEquals(encryptedPassword, user.getPassword());
+
+        verify(passwordEncoderPersistencePort, times(1))
+                .encode("plainPassword123");
+        verify(userPersistencePort, times(1))
+                .saveUser(user);
+        verifyNoMoreInteractions(
+                passwordEncoderPersistencePort,
+                userPersistencePort
+        );
     }
 }
