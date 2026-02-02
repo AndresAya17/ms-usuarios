@@ -28,6 +28,7 @@ class EmployeeRequestDtoTest {
         dto.setPhoneNumber("+573001234567");
         dto.setEmail("juan@email.com");
         dto.setPassword("password123");
+        dto.setRol("Propietario");
         return dto;
     }
 
@@ -50,7 +51,7 @@ class EmployeeRequestDtoTest {
                 validator.validate(dto);
 
         assertThat(violations)
-                .anyMatch(v -> v.getMessage().equals("El FirstName es obligatorio"));
+                .anyMatch(v -> v.getMessage().equals("First name is required"));
     }
 
     @Test
@@ -62,7 +63,7 @@ class EmployeeRequestDtoTest {
                 validator.validate(dto);
 
         assertThat(violations)
-                .anyMatch(v -> v.getMessage().equals("El apellido es obligatorio"));
+                .anyMatch(v -> v.getMessage().equals("Last name is required"));
     }
 
     @Test
@@ -74,11 +75,13 @@ class EmployeeRequestDtoTest {
                 validator.validate(dto);
 
         assertThat(violations)
-                .anyMatch(v -> v.getMessage().equals("El documento debe contener solo números"));
+                .anyMatch(v ->
+                        v.getMessage().equals("Identity document must contain only numbers")
+                );
     }
 
     @Test
-    void shouldFailWhenPhoneIsInvalid() {
+    void shouldFailWhenPhoneIsNotNumeric() {
         EmployeeRequestDto dto = buildValidDto();
         dto.setPhoneNumber("ABC123");
 
@@ -86,19 +89,23 @@ class EmployeeRequestDtoTest {
                 validator.validate(dto);
 
         assertThat(violations)
-                .anyMatch(v -> v.getMessage().equals("El celular debe ser numérico y puede iniciar con +"));
+                .anyMatch(v ->
+                        v.getMessage().equals("Phone number must be numeric and may start with '+'")
+                );
     }
 
     @Test
     void shouldFailWhenPhoneExceedsMaxLength() {
         EmployeeRequestDto dto = buildValidDto();
-        dto.setPhoneNumber("+57300123456789"); // > 13
+        dto.setPhoneNumber("+5730012345678"); // > 13
 
         Set<ConstraintViolation<EmployeeRequestDto>> violations =
                 validator.validate(dto);
 
         assertThat(violations)
-                .anyMatch(v -> v.getMessage().equals("El celular no puede tener más de 13 caracteres"));
+                .anyMatch(v ->
+                        v.getMessage().equals("Phone number must not exceed 13 characters")
+                );
     }
 
     @Test
@@ -110,7 +117,9 @@ class EmployeeRequestDtoTest {
                 validator.validate(dto);
 
         assertThat(violations)
-                .anyMatch(v -> v.getMessage().equals("El email no tiene un formato válido"));
+                .anyMatch(v ->
+                        v.getMessage().equals("Email format is not valid")
+                );
     }
 
     @Test
@@ -122,6 +131,9 @@ class EmployeeRequestDtoTest {
                 validator.validate(dto);
 
         assertThat(violations)
-                .anyMatch(v -> v.getMessage().equals("La clave debe tener al menos 8 caracteres"));
+                .anyMatch(v ->
+                        v.getMessage().equals("Password must contain at least 8 characters")
+                );
     }
+
 }

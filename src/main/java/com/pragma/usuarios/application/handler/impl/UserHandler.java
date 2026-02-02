@@ -1,14 +1,12 @@
 package com.pragma.usuarios.application.handler.impl;
 
+import com.pragma.usuarios.application.dto.request.EmployeeRequestDto;
 import com.pragma.usuarios.application.dto.request.UserRequestDto;
-import com.pragma.usuarios.application.dto.response.RolUserResponseDto;
+import com.pragma.usuarios.application.dto.response.EmployeeResponseDto;
 import com.pragma.usuarios.application.handler.IUserHandler;
 import com.pragma.usuarios.application.mapper.IUserRequestMapper;
 import com.pragma.usuarios.domain.api.IUserServicePort;
-import com.pragma.usuarios.domain.model.Rol;
 import com.pragma.usuarios.domain.model.User;
-import com.pragma.usuarios.infrastructure.exception.UnauthorizedException;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,6 +23,14 @@ public class UserHandler implements IUserHandler {
     public void saveOwner(UserRequestDto userRequestDto, String rol) {
         User user = userRequestMapper.toUser(userRequestDto);
         userServicePort.saveUser(user, rol);
+    }
+
+    @Override
+    public EmployeeResponseDto saveEmployee(EmployeeRequestDto employeeRequestDto) {
+        String rol = employeeRequestDto.getRol();
+        User user = userRequestMapper.employeeToUser(employeeRequestDto);
+        Long userId = userServicePort.saveEmployee(user, rol);
+        return new EmployeeResponseDto(userId);
     }
 
 

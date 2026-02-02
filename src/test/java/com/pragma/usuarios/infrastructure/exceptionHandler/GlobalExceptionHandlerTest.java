@@ -1,8 +1,7 @@
 package com.pragma.usuarios.infrastructure.exceptionHandler;
 
-import com.pragma.usuarios.domain.exception.UnderageUserException;
-import com.pragma.usuarios.domain.exception.UserNotFoundByEmailException;
-import com.pragma.usuarios.domain.exception.UserNotFoundException;
+import com.pragma.usuarios.domain.exception.DomainException;
+import com.pragma.usuarios.domain.exception.ErrorCode;
 import com.pragma.usuarios.infrastructure.exceptionhandler.GlobalExceptionHandler;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,7 +16,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-public class GlobalExceptionHandlerTest {
+class GlobalExceptionHandlerTest {
 
     private MockMvc mockMvc;
 
@@ -31,30 +30,53 @@ public class GlobalExceptionHandlerTest {
     @RestController
     static class TestController {
 
-        @GetMapping("/user-not-found")
-        void userNotFound() {
-            throw new UserNotFoundByEmailException("Invalid credentials");
+        @GetMapping("/data-not-found")
+        void dataNotFound() {
+            throw new DomainException(ErrorCode.DATA_NOT_FOUND, "User not found");
         }
 
-        @GetMapping("/underage-user")
-        void underageUser() {
-            throw new UnderageUserException();
+        @GetMapping("/unauthorized")
+        void unauthorized() {
+            throw new DomainException(ErrorCode.UNAUTHORIZED, "Invalid credentials");
+        }
+
+        @GetMapping("/forbidden")
+        void forbidden() {
+            throw new DomainException(ErrorCode.FORBIDDEN, "Access denied");
+        }
+
+        @GetMapping("/invalid-user")
+        void invalidUser() {
+            throw new DomainException(ErrorCode.INVALID_USER, "Invalid user data");
+        }
+
+        @GetMapping("/invalid-employee")
+        void invalidEmployee() {
+            throw new DomainException(ErrorCode.INVALID_EMPLOYEE, "Invalid employee data");
         }
     }
 
     @Test
-    void shouldReturn404WhenUserNotFoundExceptionIsThrown() throws Exception {
-        mockMvc.perform(get("/user-not-found").accept(MediaType.APPLICATION_JSON))
+    void shouldReturn404WhenDataNotFound() throws Exception {
+        mockMvc.perform(get("/data-not-found"))
                 .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.message")
-                        .value(containsString("Invalid credentials")));
+                .andExpect(jsonPath("$.errorCode").value("DATA_NOT_FOUND"))
+                .andExpect(jsonPath("$.message").value("User not found"));
     }
 
     @Test
-    void shouldReturn403WhenUnderageUserExceptionIsThrown() throws Exception {
-        mockMvc.perform(get("/underage-user"))
+    void shouldReturn401WhenUnauthorized() throws Exception {
+        mockMvc.perform(get("/unauthorized"))
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.errorCode").value("UNAUTHORIZED"))
+                .andExpect(jsonPath("$.message").value("Invalid credentials"));
+    }
+
+    @Test
+    void shouldReturn403WhenForbidden() throws Exception {
+        mockMvc.perform(get("/forbidden"))
                 .andExpect(status().isForbidden())
-                .andExpect(jsonPath("$.message")
-                        .value(containsString("18 years old")));
+                .andExpect(jsonPath("$.errorCode").value("FORBIDDEN"))
+                .andExpect(jsonPath("$.message").value("Access denied"));
     }
 }

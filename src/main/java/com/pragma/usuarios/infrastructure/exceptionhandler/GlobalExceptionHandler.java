@@ -1,10 +1,7 @@
 package com.pragma.usuarios.infrastructure.exceptionhandler;
 
 import com.pragma.usuarios.domain.exception.DomainException;
-import com.pragma.usuarios.domain.exception.InvalidDataException;
-import com.pragma.usuarios.domain.exception.UnderageUserException;
-import com.pragma.usuarios.domain.exception.UserNotFoundByEmailException;
-import com.pragma.usuarios.infrastructure.exception.UnauthorizedException;
+import com.pragma.usuarios.domain.exception.ErrorCode;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -13,36 +10,26 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
     @ExceptionHandler(DomainException.class)
-    public ResponseEntity<ErrorResponse> handleDomainException(
-            DomainException ex) {
+    public ResponseEntity<ErrorResponse> handleDomainException(DomainException ex) {
+
+        HttpStatus status = mapStatus(ex.getErrorCode());
 
         return ResponseEntity
-                .badRequest()
-                .body(new ErrorResponse(ex.getMessage()));
-    }
-    @ExceptionHandler(UserNotFoundByEmailException.class)
-    public ResponseEntity<ErrorResponse> handleUserNotFound(
-            UserNotFoundByEmailException ex
-    ){
-        return ResponseEntity
-                .status(HttpStatus.NOT_FOUND)
-                .body(new ErrorResponse(ex.getMessage()));
+                .status(status)
+                .body(new ErrorResponse(
+                        ex.getErrorCode().name(),
+                        ex.getMessage()
+                ));
     }
 
-    @ExceptionHandler(UnderageUserException.class)
-    public ResponseEntity<ErrorResponse> handleUnderageUser(
-            UnderageUserException ex
-    ){
-        return ResponseEntity
-                .status(HttpStatus.FORBIDDEN)
-                .body(new ErrorResponse(ex.getMessage()));
-    }
-    @ExceptionHandler(UnauthorizedException.class)
-    public ResponseEntity<ErrorResponse> handleUnauthorized(
-            UnauthorizedException ex
-    ){
-        return ResponseEntity
-                .status(HttpStatus.FORBIDDEN)
-                .body(new ErrorResponse(ex.getMessage()));
+    private HttpStatus mapStatus(ErrorCode errorCode) {
+        return switch (errorCode) {
+            case DATA_NOT_FOUND -> HttpStatus.NOT_FOUND;
+            case UNAUTHORIZED -> HttpStatus.UNAUTHORIZED;
+            case FORBIDDEN -> HttpStatus.FORBIDDEN;
+            case INVALID_USER,
+                 INVALID_EMPLOYEE -> HttpStatus.BAD_REQUEST;
+            default -> HttpStatus.INTERNAL_SERVER_ERROR;
+        };
     }
 }

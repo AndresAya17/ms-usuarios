@@ -1,6 +1,8 @@
 package com.pragma.usuarios.infrastructure.input.rest;
 
+import com.pragma.usuarios.application.dto.request.EmployeeRequestDto;
 import com.pragma.usuarios.application.dto.request.UserRequestDto;
+import com.pragma.usuarios.application.dto.response.EmployeeResponseDto;
 import com.pragma.usuarios.application.handler.IUserHandler;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -31,5 +33,15 @@ public class UserRestController {
             @Valid @RequestBody UserRequestDto userRequestDto) {
         userHandler.saveOwner(userRequestDto, rol);
         return new ResponseEntity<>(HttpStatus.CREATED);
+    }
+
+    @PostMapping("/employee")
+    public ResponseEntity<EmployeeResponseDto> saveEmployee(
+            @Valid @RequestBody EmployeeRequestDto employeeRequestDto) {
+        EmployeeResponseDto response =
+                userHandler.saveEmployee(employeeRequestDto);
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(response);
     }
 }

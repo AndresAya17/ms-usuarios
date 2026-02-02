@@ -1,14 +1,13 @@
 package com.pragma.usuarios.domain.usecase;
 
+import com.pragma.usuarios.domain.exception.DomainException;
+import com.pragma.usuarios.domain.exception.ErrorCode;
 import com.pragma.usuarios.domain.model.User;
 import com.pragma.usuarios.domain.model.Rol;
 import com.pragma.usuarios.domain.spi.IJwtPersistencePort;
 import com.pragma.usuarios.domain.spi.IPasswordEncoderPersistencePort;
 import com.pragma.usuarios.domain.spi.IUserPersistencePort;
-import com.pragma.usuarios.domain.usecase.LoginUseCase;
 import com.pragma.usuarios.application.dto.response.LoginResponseDto;
-import com.pragma.usuarios.domain.exception.InvalidDataException;
-import com.pragma.usuarios.domain.exception.UserNotFoundByEmailException;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -91,14 +90,18 @@ public class LoginUseCaseTest {
     @Test
     void shouldThrowUserNotFoundExceptionWhenEmailDoesNotExist() {
         String email = "notfound@email.com";
+        String password = "any-password";
 
         when(userPersistencePort.findByEmail(email))
                 .thenReturn(Optional.empty());
 
-        assertThrows(
-                UserNotFoundByEmailException.class,
-                () -> loginUseCase.login(email, "any-password")
+        DomainException exception = assertThrows(
+                DomainException.class,
+                () -> loginUseCase.login(email, password)
         );
+
+        assertEquals(ErrorCode.DATA_NOT_FOUND, exception.getErrorCode());
+        assertEquals("User not found", exception.getMessage());
 
         verify(userPersistencePort).findByEmail(email);
         verifyNoMoreInteractions(userPersistencePort);
@@ -123,10 +126,13 @@ public class LoginUseCaseTest {
         when(passwordEncoderPersistencePort.matches(rawPassword, encodedPassword))
                 .thenReturn(false);
 
-        assertThrows(
-                InvalidDataException.class,
+        DomainException exception = assertThrows(
+                DomainException.class,
                 () -> loginUseCase.login(email, rawPassword)
         );
+
+        assertEquals(ErrorCode.INVALID_USER, exception.getErrorCode());
+        assertEquals("Email or Password incorrect", exception.getMessage());
 
         verify(userPersistencePort).findByEmail(email);
         verify(passwordEncoderPersistencePort).matches(rawPassword, encodedPassword);

@@ -22,6 +22,12 @@ public class UserJpaAdapter implements IUserPersistencePort {
     }
 
     @Override
+    public Long saveEmployee(User user) {
+        UserEntity userEntity = userRepository.save(userEntityMapper.toEntity(user));
+        return userEntity.getId();
+    }
+
+    @Override
     public Optional<User> findById(Long id) {
         return userRepository.findById(id)
                 .map(userEntityMapper::toUser);
@@ -32,4 +38,5 @@ public class UserJpaAdapter implements IUserPersistencePort {
         return userRepository.findByEmail(email)
                 .map(userEntityMapper::toUser);
     }
+
 }

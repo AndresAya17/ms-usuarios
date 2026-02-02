@@ -1,5 +1,6 @@
 package com.pragma.usuarios.application.dto.request;
 
+import com.pragma.usuarios.domain.constants.DomainConstants;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -10,35 +11,35 @@ import java.time.LocalDate;
 @Setter
 public class UserRequestDto {
 
-    @NotBlank(message = "El FirstName es obligatorio")
+    @NotBlank(message = "First name is required")
     private String firstName;
 
-    @NotBlank(message = "El apellido es obligatorio")
+    @NotBlank(message = "Last name is required")
     private String lastName;
 
-    @NotBlank(message = "El documento es obligatorio")
+    @NotBlank(message = "Identity document is required")
     @Pattern(
-            regexp = "\\d+",
-            message = "El documento debe contener solo números"
+            regexp = DomainConstants.DOCUMENT_NUMBER_REGEX,
+            message = "Identity document must contain only numeric characters"
     )
     private String documentNumber;
 
-    @NotBlank(message = "El celular es obligatorio")
-    @Size(max = 13, message = "El celular no puede tener más de 13 caracteres")
+    @NotBlank(message = "Phone number is required")
+    @Size(max = 13, message = "Phone number must not exceed 13 characters")
     @Pattern(
-            regexp = "^\\+?\\d{7,13}$",
-            message = "El celular debe ser numérico y puede iniciar con +"
+            regexp = DomainConstants.PHONE_NUMBER_REGEX,
+            message = "Phone number must be numeric and may start with '+'"
     )
     private String phoneNumber;
 
-    @NotNull(message = "La fecha de nacimiento es obligatoria")
+    @NotNull(message = "Birth date is required")
     private LocalDate birthDate;
 
-    @NotBlank(message = "El email es obligatorio")
-    @Email(message = "El email no tiene un formato válido")
+    @NotBlank(message = "Email is required")
+    @Email(message = "Email format is not valid")
     private String email;
 
-    @NotBlank(message = "La clave es obligatoria")
-    @Size(min = 8, message = "La clave debe tener al menos 8 caracteres")
+    @NotBlank(message = "Password is required")
+    @Size(min = 8, message = "Password must contain at least 8 characters")
     private String password;
 }
