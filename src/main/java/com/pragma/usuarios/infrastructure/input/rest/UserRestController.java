@@ -6,6 +6,7 @@ import com.pragma.usuarios.application.dto.response.EmployeeResponseDto;
 import com.pragma.usuarios.application.handler.IUserHandler;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +23,7 @@ public class UserRestController {
 
     private final IUserHandler userHandler;
 
-    @Operation(summary = "Add a new usuario")
+    @Operation(summary = "Create a new owner user")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "User created", content = @Content),
             @ApiResponse(responseCode = "409", description = "User already exists", content = @Content)
@@ -35,6 +36,16 @@ public class UserRestController {
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
+    @Operation(
+            summary = "Create a new client user",
+            description = "Creates a new client user. " +
+                    "This endpoint is public and does not require authentication."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Client user created successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid request data"),
+            @ApiResponse(responseCode = "409", description = "User already exists")
+    })
     @PostMapping("/client")
     public ResponseEntity<Void> saveClient(
             @Valid @RequestBody UserRequestDto userRequestDto) {
@@ -42,6 +53,25 @@ public class UserRestController {
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
+    @Operation(
+            summary = "Create a new employee user",
+            description = "Creates a new employee user associated with a restaurant. " +
+                    "This operation requires proper authorization."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "201",
+                    description = "Employee user created successfully",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = EmployeeResponseDto.class)
+                    )
+            ),
+            @ApiResponse(responseCode = "400", description = "Invalid request data"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized"),
+            @ApiResponse(responseCode = "403", description = "Forbidden"),
+            @ApiResponse(responseCode = "409", description = "User already exists")
+    })
     @PostMapping("/employee")
     public ResponseEntity<EmployeeResponseDto> saveEmployee(
             @Valid @RequestBody EmployeeRequestDto employeeRequestDto) {
