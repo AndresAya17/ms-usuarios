@@ -6,5 +6,6 @@ import com.pragma.usuarios.application.dto.response.EmployeeResponseDto;
 
 public interface IUserHandler {
     void saveOwner(UserRequestDto userRequestDto, String rol);
+    void saveClient(UserRequestDto userRequestDto);
     EmployeeResponseDto saveEmployee(EmployeeRequestDto employeeRequestDto);
 }
