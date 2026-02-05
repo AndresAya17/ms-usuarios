@@ -73,6 +73,7 @@ public class UserRestController {
             @ApiResponse(responseCode = "403", description = "Forbidden"),
             @ApiResponse(responseCode = "409", description = "User already exists")
     })
+    @PreAuthorize("hasAuthority('ROLE_2')")
     @PostMapping("/employee")
     public ResponseEntity<EmployeeResponseDto> saveEmployee(
             @Valid @RequestBody EmployeeRequestDto employeeRequestDto) {

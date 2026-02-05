@@ -27,7 +27,7 @@ public class UserEntity {
     @Column(nullable = false)
     private String lastName;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String DocumentNumber;
 
     @Column(nullable = false)
@@ -35,7 +35,7 @@ public class UserEntity {
 
     private LocalDate BirthDate;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String email;
 
     @Column(nullable = false)
