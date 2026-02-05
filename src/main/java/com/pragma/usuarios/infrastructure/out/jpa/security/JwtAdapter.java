@@ -15,10 +15,10 @@ public class JwtAdapter implements IJwtPersistencePort {
     private final long expirationMs = 3600000;
 
     @Override
-    public String generateToken(Long userId, String rol) {
+    public String generateToken(Long userId, Long roleId) {
         return Jwts.builder()
                 .setSubject(String.valueOf(userId))
-                .claim("rol", rol)
+                .claim("roleId", roleId)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + expirationMs))
                 .signWith(Keys.hmacShaKeyFor(secret.getBytes()), SignatureAlgorithm.HS256)
@@ -51,12 +51,12 @@ public class JwtAdapter implements IJwtPersistencePort {
     }
 
     @Override
-    public String getRol(String token) {
+    public Long getRolId(String token) {
         return Jwts.parserBuilder()
                 .setSigningKey(secret.getBytes())
                 .build()
                 .parseClaimsJws(token)
                 .getBody()
-                .get("rol", String.class);
+                .get("roleId", Long.class);
     }
 }

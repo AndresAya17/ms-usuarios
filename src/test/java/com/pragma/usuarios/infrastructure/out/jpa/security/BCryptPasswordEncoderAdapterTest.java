@@ -16,13 +16,10 @@ public class BCryptPasswordEncoderAdapterTest {
 
     @Test
     void shouldEncodePassword() {
-        // Arrange
         String rawPassword = "password123";
 
-        // Act
         String encodedPassword = passwordEncoderAdapter.encode(rawPassword);
 
-        // Assert
         assertNotNull(encodedPassword);
         assertNotEquals(rawPassword, encodedPassword);
     }

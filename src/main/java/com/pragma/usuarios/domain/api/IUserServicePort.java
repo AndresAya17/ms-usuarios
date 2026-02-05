@@ -5,9 +5,9 @@ import com.pragma.usuarios.domain.model.User;
 
 public interface IUserServicePort {
 
-    void saveUser(User user, String rol);
+    void saveUser(User user);
 
     void saveClient(User user);
 
-    Long saveEmployee(User employee, String rol);
+    Long saveEmployee(User employee);
 }

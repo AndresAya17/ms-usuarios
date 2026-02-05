@@ -12,6 +12,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
@@ -28,11 +29,11 @@ public class UserRestController {
             @ApiResponse(responseCode = "201", description = "User created", content = @Content),
             @ApiResponse(responseCode = "409", description = "User already exists", content = @Content)
     })
+    @PreAuthorize("hasAuthority('ROLE_1')")
     @PostMapping("/owner")
     public ResponseEntity<Void> saveOwner(
-            @RequestAttribute("auth.rol") String rol,
             @Valid @RequestBody UserRequestDto userRequestDto) {
-        userHandler.saveOwner(userRequestDto, rol);
+        userHandler.saveOwner(userRequestDto);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 

@@ -41,7 +41,7 @@ public class UserEntity {
     @Column(nullable = false)
     private String password;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private Rol rol;
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "id_rol", nullable = false)
+    private RolEntity rol;
 }

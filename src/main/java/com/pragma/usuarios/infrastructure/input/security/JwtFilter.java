@@ -8,7 +8,13 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+
 import java.io.IOException;
+import java.util.List;
 
 @Component
 public class JwtFilter extends OncePerRequestFilter {
@@ -35,8 +41,23 @@ public class JwtFilter extends OncePerRequestFilter {
             String token = authHeader.substring(BEARER_PREFIX.length());
 
             if (persistencePort.validateToken(token)) {
-                request.setAttribute("auth.userId", persistencePort.getUserId(token));
-                request.setAttribute("auth.rol", persistencePort.getRol(token));
+                Long userId = persistencePort.getUserId(token);
+                Long roleId = persistencePort.getRolId(token);
+
+                List<GrantedAuthority> authorities =
+                        List.of(new SimpleGrantedAuthority("ROLE_" + roleId));
+
+                System.out.println("JWT roleId = {}" + roleId);
+                System.out.println("Authorities = {}" + authorities);
+
+                UsernamePasswordAuthenticationToken authentication =
+                        new UsernamePasswordAuthenticationToken(
+                                userId,
+                                null,
+                                authorities
+                        );
+
+                SecurityContextHolder.getContext().setAuthentication(authentication);
             }
         }
 
