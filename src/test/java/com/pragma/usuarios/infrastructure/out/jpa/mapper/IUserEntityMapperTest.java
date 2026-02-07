@@ -1,23 +1,37 @@
 package com.pragma.usuarios.infrastructure.out.jpa.mapper;
 
+import com.pragma.usuarios.application.mapper.IRolRequestMapper;
 import com.pragma.usuarios.domain.model.User;
 import com.pragma.usuarios.domain.model.Rol;
+import com.pragma.usuarios.infrastructure.out.jpa.entity.RolEntity;
 import com.pragma.usuarios.infrastructure.out.jpa.entity.UserEntity;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mapstruct.factory.Mappers;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
 
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.junit.jupiter.api.Assertions.*;
 
+@ExtendWith(MockitoExtension.class)
 public class IUserEntityMapperTest {
 
-    private final IUserEntityMapper mapper =
-            Mappers.getMapper(IUserEntityMapper.class);
+    @Mock
+    private IRolRequestMapper rolRequestMapper;
+
+    @InjectMocks
+    private IUserEntityMapperImpl mapper;
+
 
     @Test
     void deberiaMapearUserADominioAEntityCorrectamente() {
-        // Arrange
+        Rol rol = new Rol(2L);
+
         User user = new User();
         user.setId(1L);
         user.setFirstName("Juan");
@@ -27,12 +41,16 @@ public class IUserEntityMapperTest {
         user.setBirthDate(LocalDate.of(1990, 1, 1));
         user.setEmail("juan@email.com");
         user.setPassword("password123");
-        user.setRol(Rol.PROPIETARIO);
+        user.setRol(rol);
 
-        // Act
+        RolEntity rolEntity = new RolEntity();
+        rolEntity.setId(2L);
+
+        when(rolRequestMapper.toEntity(rol))
+                .thenReturn(rolEntity);
+
         UserEntity entity = mapper.toEntity(user);
 
-        // Assert
         assertNotNull(entity);
         assertEquals(user.getId(), entity.getId());
         assertEquals(user.getFirstName(), entity.getFirstName());
@@ -42,12 +60,15 @@ public class IUserEntityMapperTest {
         assertEquals(user.getBirthDate(), entity.getBirthDate());
         assertEquals(user.getEmail(), entity.getEmail());
         assertEquals(user.getPassword(), entity.getPassword());
-        assertEquals(user.getRol(), entity.getRol());
+
+        assertNotNull(entity.getRol());
+        assertEquals(2L, entity.getRol().getId());
+
+        verify(rolRequestMapper).toEntity(rol);
     }
 
     @Test
     void deberiaMapearUserEntityADominioCorrectamente() {
-        // Arrange
         UserEntity entity = new UserEntity();
         entity.setId(2L);
         entity.setFirstName("Maria");
@@ -57,12 +78,9 @@ public class IUserEntityMapperTest {
         entity.setBirthDate(LocalDate.of(1995, 5, 10));
         entity.setEmail("maria@email.com");
         entity.setPassword("claveSegura");
-        entity.setRol(Rol.CLIENTE);
 
-        // Act
         User user = mapper.toUser(entity);
 
-        // Assert
         assertNotNull(user);
         assertEquals(entity.getId(), user.getId());
         assertEquals(entity.getFirstName(), user.getFirstName());
@@ -72,7 +90,6 @@ public class IUserEntityMapperTest {
         assertEquals(entity.getBirthDate(), user.getBirthDate());
         assertEquals(entity.getEmail(), user.getEmail());
         assertEquals(entity.getPassword(), user.getPassword());
-        assertEquals(entity.getRol(), user.getRol());
     }
 
 }

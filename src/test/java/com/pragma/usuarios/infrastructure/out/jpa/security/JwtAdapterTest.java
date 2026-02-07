@@ -18,65 +18,50 @@ class JwtAdapterTest {
 
     @Test
     void shouldGenerateValidToken() {
-        // arrange
         Long userId = 1L;
-        String rol = "PROPIETARIO";
+        Long rolId = 2L;
 
-        // act
-        String token = jwtAdapter.generateToken(userId, rol);
+        String token = jwtAdapter.generateToken(userId, rolId);
 
-        // assert
         assertNotNull(token);
         assertFalse(token.isBlank());
     }
 
     @Test
     void shouldValidateValidToken() {
-        // arrange
-        String token = jwtAdapter.generateToken(1L, "ADMIN");
+        String token = jwtAdapter.generateToken(1L, 2L);
 
-        // act
         boolean isValid = jwtAdapter.validateToken(token);
 
-        // assert
         assertTrue(isValid);
     }
 
     @Test
     void shouldReturnFalseWhenTokenIsInvalid() {
-        // arrange
         String invalidToken = "this.is.not.a.valid.jwt";
 
-        // act
         boolean isValid = jwtAdapter.validateToken(invalidToken);
 
-        // assert
         assertFalse(isValid);
     }
 
     @Test
     void shouldExtractUserIdFromToken() {
-        // arrange
         Long expectedUserId = 5L;
-        String token = jwtAdapter.generateToken(expectedUserId, "EMPLEADO");
+        String token = jwtAdapter.generateToken(expectedUserId, 2L);
 
-        // act
         Long userId = jwtAdapter.getUserId(token);
 
-        // assert
         assertEquals(expectedUserId, userId);
     }
 
     @Test
     void shouldExtractRolFromToken() {
-        // arrange
-        String expectedRol = "CLIENTE";
+        Long expectedRol = 2L;
         String token = jwtAdapter.generateToken(10L, expectedRol);
 
-        // act
-        String rol = jwtAdapter.getRol(token);
+        Long rol = jwtAdapter.getRolId(token);
 
-        // assert
         assertEquals(expectedRol, rol);
     }
 

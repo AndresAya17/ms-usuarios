@@ -28,7 +28,6 @@ class EmployeeRequestDtoTest {
         dto.setPhoneNumber("+573001234567");
         dto.setEmail("juan@email.com");
         dto.setPassword("password123");
-        dto.setRol("Propietario");
         return dto;
     }
 

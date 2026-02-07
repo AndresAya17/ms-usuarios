@@ -42,6 +42,17 @@ class UserUseCaseTest {
         );
     }
 
+    private User buildValidClientUser() {
+        User user = new User();
+        user.setFirstName("Juan");
+        user.setLastName("Perez");
+        user.setDocumentNumber("123456789");
+        user.setPhoneNumber("3001234567");
+        user.setEmail("juan@email.com");
+        user.setPassword("plainPassword123");
+        user.setBirthDate(LocalDate.now().minusYears(20));
+        return user;
+    }
 
     @Test
     void deberiaAsignarRolPropietarioYGuardarUserCuandoEsMayorDeEdad() {
@@ -54,13 +65,11 @@ class UserUseCaseTest {
         user.setPassword("password123");
         user.setBirthDate(LocalDate.now().minusYears(25));
 
-        String rol = Rol.ADMINISTRADOR.name();
         when(passwordEncoderPersistencePort.encode("password123"))
                 .thenReturn("encryptedPassword");
 
-        userUseCase.saveUser(user,rol);
+        userUseCase.saveUser(user);
 
-        assertEquals(Rol.PROPIETARIO, user.getRol());
         verify(passwordEncoderPersistencePort).encode("password123");
         verify(userPersistencePort).saveUser(user);
     }
@@ -75,11 +84,10 @@ class UserUseCaseTest {
         user.setEmail("juan@email.com");
         user.setPassword("password123");
         user.setBirthDate(LocalDate.now().minusYears(16));
-        String rol = Rol.ADMINISTRADOR.name();
 
         DomainException exception = assertThrows(
                 DomainException.class,
-                () -> userUseCase.saveUser(user, rol)
+                () -> userUseCase.saveUser(user)
         );
 
         assertEquals(ErrorCode.INVALID_USER, exception.getErrorCode());
@@ -92,22 +100,6 @@ class UserUseCaseTest {
         verify(passwordEncoderPersistencePort, never()).encode(any());
     }
 
-    @Test
-    void shouldThrowExceptionWhenRoleIsNotOwner() {
-        User employee = new User();
-        String rol = Rol.EMPLEADO.name();
-
-        DomainException exception = assertThrows(
-                DomainException.class,
-                () -> userUseCase.saveEmployee(employee, rol)
-        );
-
-        assertEquals(ErrorCode.UNAUTHORIZED, exception.getErrorCode());
-        assertEquals("You don't have permissions", exception.getMessage());
-
-        verifyNoInteractions(passwordEncoderPersistencePort);
-        verifyNoInteractions(userPersistencePort);
-    }
 
     @Test
     void shouldSaveEmployeeWhenRoleIsOwner() {
@@ -120,7 +112,6 @@ class UserUseCaseTest {
         employee.setBirthDate(LocalDate.of(1995, 1, 1));
         employee.setPassword("plainPassword");
 
-        String rol = Rol.PROPIETARIO.name();
         String encryptedPassword = "encryptedPassword";
         Long expectedId = 1L;
 
@@ -130,10 +121,9 @@ class UserUseCaseTest {
         when(userPersistencePort.saveEmployee(any(User.class)))
                 .thenReturn(expectedId);
 
-        Long result = userUseCase.saveEmployee(employee, rol);
+        Long result = userUseCase.saveEmployee(employee);
 
         assertEquals(expectedId, result);
-        assertEquals(Rol.EMPLEADO, employee.getRol());
         assertEquals(encryptedPassword, employee.getPassword());
 
         verify(passwordEncoderPersistencePort).encode("plainPassword");
@@ -142,26 +132,65 @@ class UserUseCaseTest {
 
     @Test
     void shouldSaveClientWithEncryptedPasswordAndClientRole() {
-        // arrange
+        User user = buildValidClientUser();
+
         String encryptedPassword = "encryptedPassword123";
 
         when(passwordEncoderPersistencePort.encode("plainPassword123"))
                 .thenReturn(encryptedPassword);
 
-        // act
+        when(userPersistencePort.existsByEmail(user.getEmail()))
+                .thenReturn(false);
+
+        when(userPersistencePort.existsByDocumentNumber(user.getDocumentNumber()))
+                .thenReturn(false);
+
         userUseCase.saveClient(user);
 
-        // assert
-        assertEquals(Rol.CLIENTE, user.getRol());
         assertEquals(encryptedPassword, user.getPassword());
 
-        verify(passwordEncoderPersistencePort, times(1))
-                .encode("plainPassword123");
-        verify(userPersistencePort, times(1))
-                .saveUser(user);
-        verifyNoMoreInteractions(
-                passwordEncoderPersistencePort,
-                userPersistencePort
+        verify(userPersistencePort).existsByEmail(user.getEmail());
+        verify(userPersistencePort).existsByDocumentNumber(user.getDocumentNumber());
+        verify(passwordEncoderPersistencePort).encode("plainPassword123");
+        verify(userPersistencePort).saveUser(user);
+    }
+    @Test
+    void shouldThrowExceptionWhenEmailAlreadyExists() {
+        User user = buildValidClientUser();
+        when(userPersistencePort.existsByEmail(user.getEmail()))
+                .thenReturn(true);
+
+        DomainException exception = assertThrows(
+                DomainException.class,
+                () -> userUseCase.saveEmployee(user)
         );
+
+        assertEquals(ErrorCode.INVALID_USER, exception.getErrorCode());
+        assertEquals("Email already exists", exception.getMessage());
+
+        verify(userPersistencePort).existsByEmail(user.getEmail());
+        verifyNoMoreInteractions(userPersistencePort);
+    }
+
+    @Test
+    void shouldThrowExceptionWhenDocumentNumberAlreadyExists() {
+        User user = buildValidClientUser();
+
+        when(userPersistencePort.existsByEmail(user.getEmail()))
+                .thenReturn(false);
+
+        when(userPersistencePort.existsByDocumentNumber(user.getDocumentNumber()))
+                .thenReturn(true);
+
+        DomainException exception = assertThrows(
+                DomainException.class,
+                () -> userUseCase.saveEmployee(user)
+        );
+
+        assertEquals(ErrorCode.INVALID_USER, exception.getErrorCode());
+        assertEquals("Document number already exists", exception.getMessage());
+
+        verify(userPersistencePort).existsByEmail(user.getEmail());
+        verify(userPersistencePort).existsByDocumentNumber(user.getDocumentNumber());
     }
 }

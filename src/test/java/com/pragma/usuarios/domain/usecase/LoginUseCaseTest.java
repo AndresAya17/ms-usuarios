@@ -22,7 +22,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-public class LoginUseCaseTest {
+class LoginUseCaseTest {
 
     @Mock
     private IUserPersistencePort userPersistencePort;
@@ -46,17 +46,18 @@ public class LoginUseCaseTest {
 
     @Test
     void shouldLoginSuccessfullyWhenCredentialsAreValid() {
-        // Arrange
         String email = "user@email.com";
         String rawPassword = "password123";
         String encodedPassword = "encodedPassword";
         String token = "jwt-token";
 
+        Rol rol = new Rol(1L);
+
         User user = new User();
         user.setId(1L);
         user.setEmail(email);
         user.setPassword(encodedPassword);
-        user.setRol(Rol.ADMINISTRADOR);
+        user.setRol(rol);
 
         when(userPersistencePort.findByEmail(email))
                 .thenReturn(Optional.of(user));
@@ -64,22 +65,20 @@ public class LoginUseCaseTest {
         when(passwordEncoderPersistencePort.matches(rawPassword, encodedPassword))
                 .thenReturn(true);
 
-        when(jwtPersistencePort.generateToken(1L, Rol.ADMINISTRADOR.name()))
+        when(jwtPersistencePort.generateToken(1L, 1L))
                 .thenReturn(token);
 
-        // Act
         LoginResponseDto response = loginUseCase.login(email, rawPassword);
 
-        // Assert
         assertNotNull(response);
         assertEquals(1L, response.getUserId());
         assertEquals(email, response.getEmail());
-        assertEquals(Rol.ADMINISTRADOR.name(), response.getRol());
+        assertEquals("1", response.getRol());   // 👈 ID COMO STRING
         assertEquals(token, response.getToken());
 
         verify(userPersistencePort).findByEmail(email);
         verify(passwordEncoderPersistencePort).matches(rawPassword, encodedPassword);
-        verify(jwtPersistencePort).generateToken(1L, Rol.ADMINISTRADOR.name());
+        verify(jwtPersistencePort).generateToken(1L, 1L);
         verifyNoMoreInteractions(
                 userPersistencePort,
                 passwordEncoderPersistencePort,
@@ -111,14 +110,16 @@ public class LoginUseCaseTest {
     @Test
     void shouldThrowInvalidDataExceptionWhenPasswordIsIncorrect() {
         String email = "user@email.com";
-        String rawPassword = "wrongPassword";
+        String rawPassword = "password123";
         String encodedPassword = "encodedPassword";
+
+        Rol rol = new Rol(1L);
 
         User user = new User();
         user.setId(1L);
         user.setEmail(email);
         user.setPassword(encodedPassword);
-        user.setRol(Rol.PROPIETARIO);
+        user.setRol(rol);
 
         when(userPersistencePort.findByEmail(email))
                 .thenReturn(Optional.of(user));
@@ -136,6 +137,7 @@ public class LoginUseCaseTest {
 
         verify(userPersistencePort).findByEmail(email);
         verify(passwordEncoderPersistencePort).matches(rawPassword, encodedPassword);
+
         verifyNoInteractions(jwtPersistencePort);
     }
 

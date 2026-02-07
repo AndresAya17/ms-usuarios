@@ -22,7 +22,6 @@ public class UserEntityTest {
         entity.setBirthDate(LocalDate.of(1990, 1, 1));
         entity.setEmail("juan@email.com");
         entity.setPassword("password123");
-        entity.setRol(Rol.ADMINISTRADOR);
 
         assertEquals(1L, entity.getId());
         assertEquals("Juan", entity.getFirstName());
@@ -32,11 +31,14 @@ public class UserEntityTest {
         assertEquals(LocalDate.of(1990, 1, 1), entity.getBirthDate());
         assertEquals("juan@email.com", entity.getEmail());
         assertEquals("password123", entity.getPassword());
-        assertEquals(Rol.ADMINISTRADOR, entity.getRol());
     }
 
     @Test
     void shouldWorkWithAllArgsConstructor() {
+        RolEntity rolEntity = new RolEntity();
+        rolEntity.setId(1L);
+        rolEntity.setName("ADMINISTRADOR");
+        rolEntity.setDescription("Administrador del sistema");
         UserEntity entity = new UserEntity(
                 1L,
                 "Juan",
@@ -46,7 +48,7 @@ public class UserEntityTest {
                 LocalDate.of(1990, 1, 1),
                 "juan@email.com",
                 "password123",
-                Rol.CLIENTE
+                rolEntity
         );
 
         assertEquals(1L, entity.getId());
@@ -57,7 +59,6 @@ public class UserEntityTest {
         assertEquals(LocalDate.of(1990, 1, 1), entity.getBirthDate());
         assertEquals("juan@email.com", entity.getEmail());
         assertEquals("password123", entity.getPassword());
-        assertEquals(Rol.CLIENTE, entity.getRol());
     }
 
 

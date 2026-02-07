@@ -28,12 +28,12 @@ public class UserEntity {
     private String lastName;
 
     @Column(nullable = false, unique = true)
-    private String DocumentNumber;
+    private String documentNumber;
 
     @Column(nullable = false)
-    private String PhoneNumber;
+    private String phoneNumber;
 
-    private LocalDate BirthDate;
+    private LocalDate birthDate;
 
     @Column(nullable = false, unique = true)
     private String email;

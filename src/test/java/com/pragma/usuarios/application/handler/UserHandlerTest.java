@@ -43,19 +43,17 @@ class UserHandlerTest {
     void deberiaMapearYGuardarUserCorrectamente() {
         UserRequestDto requestDto = new UserRequestDto();
         User user = new User();
-        String rol = "OWNER";
 
         when(userRequestMapper.toUser(requestDto))
                 .thenReturn(user);
 
-        userHandler.saveOwner(requestDto, rol);
+        userHandler.saveOwner(requestDto);
 
-        // Assert
         verify(userRequestMapper, times(1))
                 .toUser(requestDto);
 
         verify(userServicePort, times(1))
-                .saveUser(user, rol);
+                .saveUser(user);
 
         verifyNoMoreInteractions(userRequestMapper, userServicePort);
     }
@@ -73,21 +71,16 @@ class UserHandlerTest {
 
     @Test
     void shouldSaveEmployeeSuccessfully() {
-        // arrange
-        String rol = "EMPLOYEE";
         Long expectedUserId = 10L;
-
-        employeeRequestDto.setRol(rol);
-
         when(userRequestMapper.employeeToUser(employeeRequestDto)).thenReturn(user);
-        when(userServicePort.saveEmployee(user, rol)).thenReturn(expectedUserId);
+        when(userServicePort.saveEmployee(user)).thenReturn(expectedUserId);
 
         EmployeeResponseDto response = userHandler.saveEmployee(employeeRequestDto);
 
         assertEquals(expectedUserId, response.getEmployeeUserId());
 
         verify(userRequestMapper, times(1)).employeeToUser(employeeRequestDto);
-        verify(userServicePort, times(1)).saveEmployee(user, rol);
+        verify(userServicePort, times(1)).saveEmployee(user);
         verifyNoMoreInteractions(userServicePort, userRequestMapper);
     }
 

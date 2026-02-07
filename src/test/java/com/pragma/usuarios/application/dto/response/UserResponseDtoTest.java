@@ -8,11 +8,12 @@ import java.time.LocalDate;
 import static org.junit.jupiter.api.Assertions.*;
 
 
-public class UserResponseDtoTest {
+class UserResponseDtoTest {
 
     @Test
     void deberiaPermitirAsignarYObtenerValores() {
         UserResponseDto dto = new UserResponseDto();
+        Rol rol = new Rol(1L);
 
         dto.setId(1L);
         dto.setFirstName("Juan");
@@ -22,7 +23,7 @@ public class UserResponseDtoTest {
         dto.setBirthDate(LocalDate.of(1990, 1, 1));
         dto.setEmail("juan@email.com");
         dto.setPassword("password123");
-        dto.setRol(Rol.ADMINISTRADOR);
+        dto.setRol(rol);
 
         assertEquals(1L, dto.getId());
         assertEquals("Juan", dto.getFirstName());
@@ -32,7 +33,9 @@ public class UserResponseDtoTest {
         assertEquals(LocalDate.of(1990, 1, 1), dto.getBirthDate());
         assertEquals("juan@email.com", dto.getEmail());
         assertEquals("password123", dto.getPassword());
-        assertEquals(Rol.ADMINISTRADOR, dto.getRol());
+
+        assertNotNull(dto.getRol());
+        assertEquals(1L, dto.getRol().getId());
     }
 
 }

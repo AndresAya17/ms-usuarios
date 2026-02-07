@@ -10,7 +10,7 @@ import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class IUserResponseMapperTest {
+class IUserResponseMapperTest {
 
     private final IUserResponseMapper mapper =
             Mappers.getMapper(IUserResponseMapper.class);
@@ -27,12 +27,10 @@ public class IUserResponseMapperTest {
         user.setBirthDate(LocalDate.of(1990, 1, 1));
         user.setEmail("juan@email.com");
         user.setPassword("password123");
-        user.setRol(Rol.PROPIETARIO);
+        user.setRol(new Rol(2L));
 
-        // Act
         UserResponseDto response = mapper.toResponse(user);
 
-        // Assert
         assertNotNull(response);
         assertEquals(user.getId(), response.getId());
         assertEquals(user.getFirstName(), response.getFirstName());
