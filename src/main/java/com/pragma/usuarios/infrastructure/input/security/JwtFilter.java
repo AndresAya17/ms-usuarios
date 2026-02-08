@@ -42,12 +42,12 @@ public class JwtFilter extends OncePerRequestFilter {
 
             if (persistencePort.validateToken(token)) {
                 Long userId = persistencePort.getUserId(token);
-                Long roleId = persistencePort.getRolId(token);
+                String rol = persistencePort.getRol(token);
 
                 List<GrantedAuthority> authorities =
-                        List.of(new SimpleGrantedAuthority("ROLE_" + roleId));
+                        List.of(new SimpleGrantedAuthority(rol));
 
-                System.out.println("JWT roleId = {}" + roleId);
+                System.out.println("JWT roleId = {}" + rol);
                 System.out.println("Authorities = {}" + authorities);
 
                 UsernamePasswordAuthenticationToken authentication =

@@ -33,14 +33,14 @@ public class LoginUseCase implements ILoginServicePort {
 
         String token = jwtPersistencePort.generateToken(
                 user.getId(),
-                user.getRol().getId()
+                user.getRol().getName()
         );
 
 
         return new LoginResponseDto(
                 user.getId(),
                 user.getEmail(),
-                user.getRol().getId().toString(),
+                user.getRol().getName(),
                 token
         );
     }

@@ -1,17 +1,17 @@
 package com.pragma.usuarios.infrastructure.out.jpa.mapper;
 
-import com.pragma.usuarios.domain.model.User;
-import com.pragma.usuarios.infrastructure.out.jpa.entity.UserEntity;
+import com.pragma.usuarios.infrastructure.out.jpa.entity.RolEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.ReportingPolicy;
 
+import javax.management.relation.Role;
+
 @Mapper(componentModel = "spring",
-        uses = IRoleEntityMapper.class,
         unmappedTargetPolicy = ReportingPolicy.IGNORE,
         unmappedSourcePolicy = ReportingPolicy.IGNORE
 )
-public interface IUserEntityMapper {
-    UserEntity toEntity(User user);
-    User toUser(UserEntity userEntity);
+public interface IRoleEntityMapper {
+    Role toDomain(RolEntity roleEntity);
 
+    RolEntity toEntity(Role role);
 }

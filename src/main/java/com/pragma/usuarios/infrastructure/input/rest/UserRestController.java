@@ -29,7 +29,7 @@ public class UserRestController {
             @ApiResponse(responseCode = "201", description = "User created", content = @Content),
             @ApiResponse(responseCode = "409", description = "User already exists", content = @Content)
     })
-    @PreAuthorize("hasAuthority('ROLE_1')")
+    @PreAuthorize("hasAuthority('ADMIN')")
     @PostMapping("/owner")
     public ResponseEntity<Void> saveOwner(
             @Valid @RequestBody UserRequestDto userRequestDto) {

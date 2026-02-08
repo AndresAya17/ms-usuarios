@@ -11,14 +11,14 @@ import java.util.Date;
 @Component
 public class JwtAdapter implements IJwtPersistencePort {
 
-    private final String secret = "pragma-ms-usuarios-super-secret-key-256-bits!!"; // luego a env
+    private final String secret = "pragma-ms-usuarios-super-secret-key-256-bits!!";
     private final long expirationMs = 3600000;
 
     @Override
-    public String generateToken(Long userId, Long roleId) {
+    public String generateToken(Long userId, String roleName) {
         return Jwts.builder()
                 .setSubject(String.valueOf(userId))
-                .claim("roleId", roleId)
+                .claim("rol", roleName)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + expirationMs))
                 .signWith(Keys.hmacShaKeyFor(secret.getBytes()), SignatureAlgorithm.HS256)
@@ -51,12 +51,12 @@ public class JwtAdapter implements IJwtPersistencePort {
     }
 
     @Override
-    public Long getRolId(String token) {
+    public String getRol(String token) {
         return Jwts.parserBuilder()
                 .setSigningKey(secret.getBytes())
                 .build()
                 .parseClaimsJws(token)
                 .getBody()
-                .get("roleId", Long.class);
+                .get("rol", String.class);
     }
 }
