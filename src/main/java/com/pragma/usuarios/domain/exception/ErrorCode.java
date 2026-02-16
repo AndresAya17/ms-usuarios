@@ -5,5 +5,6 @@ public enum ErrorCode {
     INVALID_USER,
     DATA_NOT_FOUND,
     FORBIDDEN,
-    UNAUTHORIZED
+    UNAUTHORIZED,
+    EXTERNAL_SERVICE_ERROR
 }

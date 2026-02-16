@@ -36,7 +36,4 @@ public class EmployeeRequestDto {
     @NotBlank(message = "Password is required")
     @Size(min = 8, message = "Password must contain at least 8 characters")
     private String password;
-
-    @NotBlank(message = "Rol is required")
-    private String rol;
 }

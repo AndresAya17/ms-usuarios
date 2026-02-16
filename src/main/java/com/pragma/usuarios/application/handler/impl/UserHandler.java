@@ -20,9 +20,9 @@ public class UserHandler implements IUserHandler {
     private final IUserRequestMapper userRequestMapper;
 
     @Override
-    public void saveOwner(UserRequestDto userRequestDto, String rol) {
+    public void saveOwner(UserRequestDto userRequestDto) {
         User user = userRequestMapper.toUser(userRequestDto);
-        userServicePort.saveUser(user, rol);
+        userServicePort.saveUser(user);
     }
 
     @Override
@@ -32,11 +32,9 @@ public class UserHandler implements IUserHandler {
     }
 
     @Override
-    public EmployeeResponseDto saveEmployee(EmployeeRequestDto employeeRequestDto) {
-        String rol = employeeRequestDto.getRol();
+    public void saveEmployee(EmployeeRequestDto employeeRequestDto, Long restaurantId, Long userId) {
         User user = userRequestMapper.employeeToUser(employeeRequestDto);
-        Long userId = userServicePort.saveEmployee(user, rol);
-        return new EmployeeResponseDto(userId);
+        userServicePort.saveEmployee(user, restaurantId, userId);
     }
 
 

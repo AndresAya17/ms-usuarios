@@ -4,6 +4,7 @@ import com.pragma.usuarios.domain.api.ILoginServicePort;
 import com.pragma.usuarios.domain.api.IUserServicePort;
 import com.pragma.usuarios.domain.spi.IJwtPersistencePort;
 import com.pragma.usuarios.domain.spi.IPasswordEncoderPersistencePort;
+import com.pragma.usuarios.domain.spi.IRestaurantPersistencePort;
 import com.pragma.usuarios.domain.spi.IUserPersistencePort;
 import com.pragma.usuarios.domain.usecase.LoginUseCase;
 import com.pragma.usuarios.domain.usecase.UserUseCase;
@@ -23,6 +24,7 @@ public class BeanConfiguration {
     private final IUserEntityMapper userEntityMapper;
     private final IPasswordEncoderPersistencePort passwordEncoderPersistencePort;
     private final IJwtPersistencePort jwtPersistencePort;
+    private final IRestaurantPersistencePort restaurantPersistencePort;
 
     @Bean
     public IUserPersistencePort userPersistencePort() {
@@ -30,7 +32,7 @@ public class BeanConfiguration {
     }
 
     @Bean
-    public IUserServicePort userServicePort(){ return new UserUseCase(userPersistencePort(), passwordEncoderPersistencePort);
+    public IUserServicePort userServicePort(){ return new UserUseCase(userPersistencePort(), passwordEncoderPersistencePort, restaurantPersistencePort);
     }
 
     @Bean

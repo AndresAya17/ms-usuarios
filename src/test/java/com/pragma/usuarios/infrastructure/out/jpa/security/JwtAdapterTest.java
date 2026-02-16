@@ -18,66 +18,57 @@ class JwtAdapterTest {
 
     @Test
     void shouldGenerateValidToken() {
-        // arrange
         Long userId = 1L;
-        String rol = "PROPIETARIO";
+        String roleName = "OWNER";
 
-        // act
-        String token = jwtAdapter.generateToken(userId, rol);
+        String token = jwtAdapter.generateToken(userId, roleName);
 
-        // assert
         assertNotNull(token);
         assertFalse(token.isBlank());
     }
 
     @Test
     void shouldValidateValidToken() {
-        // arrange
-        String token = jwtAdapter.generateToken(1L, "ADMIN");
+        Long userId = 1L;
+        String roleName = "OWNER";
 
-        // act
+        String token = jwtAdapter.generateToken(userId, roleName);
+
         boolean isValid = jwtAdapter.validateToken(token);
 
-        // assert
         assertTrue(isValid);
     }
 
     @Test
     void shouldReturnFalseWhenTokenIsInvalid() {
-        // arrange
         String invalidToken = "this.is.not.a.valid.jwt";
 
-        // act
         boolean isValid = jwtAdapter.validateToken(invalidToken);
 
-        // assert
         assertFalse(isValid);
     }
 
     @Test
     void shouldExtractUserIdFromToken() {
-        // arrange
         Long expectedUserId = 5L;
-        String token = jwtAdapter.generateToken(expectedUserId, "EMPLEADO");
+        String roleName = "OWNER";
 
-        // act
+        String token = jwtAdapter.generateToken(expectedUserId, roleName);
+
         Long userId = jwtAdapter.getUserId(token);
 
-        // assert
         assertEquals(expectedUserId, userId);
     }
 
     @Test
     void shouldExtractRolFromToken() {
-        // arrange
-        String expectedRol = "CLIENTE";
-        String token = jwtAdapter.generateToken(10L, expectedRol);
+        String expectedRole = "OWNER";
 
-        // act
-        String rol = jwtAdapter.getRol(token);
+        String token = jwtAdapter.generateToken(10L, expectedRole);
 
-        // assert
-        assertEquals(expectedRol, rol);
+        String role = jwtAdapter.getRol(token);
+
+        assertEquals(expectedRole, role);
     }
 
 }

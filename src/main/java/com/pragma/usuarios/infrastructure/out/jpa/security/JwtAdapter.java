@@ -11,14 +11,14 @@ import java.util.Date;
 @Component
 public class JwtAdapter implements IJwtPersistencePort {
 
-    private final String secret = "pragma-ms-usuarios-super-secret-key-256-bits!!"; // luego a env
+    private final String secret = "pragma-ms-usuarios-super-secret-key-256-bits!!";
     private final long expirationMs = 3600000;
 
     @Override
-    public String generateToken(Long userId, String rol) {
+    public String generateToken(Long userId, String roleName) {
         return Jwts.builder()
                 .setSubject(String.valueOf(userId))
-                .claim("rol", rol)
+                .claim("rol", roleName)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + expirationMs))
                 .signWith(Keys.hmacShaKeyFor(secret.getBytes()), SignatureAlgorithm.HS256)

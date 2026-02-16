@@ -12,6 +12,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
@@ -28,11 +29,11 @@ public class UserRestController {
             @ApiResponse(responseCode = "201", description = "User created", content = @Content),
             @ApiResponse(responseCode = "409", description = "User already exists", content = @Content)
     })
+    @PreAuthorize("hasAuthority('ADMIN')")
     @PostMapping("/owner")
     public ResponseEntity<Void> saveOwner(
-            @RequestAttribute("auth.rol") String rol,
             @Valid @RequestBody UserRequestDto userRequestDto) {
-        userHandler.saveOwner(userRequestDto, rol);
+        userHandler.saveOwner(userRequestDto);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
@@ -72,13 +73,13 @@ public class UserRestController {
             @ApiResponse(responseCode = "403", description = "Forbidden"),
             @ApiResponse(responseCode = "409", description = "User already exists")
     })
-    @PostMapping("/employee")
-    public ResponseEntity<EmployeeResponseDto> saveEmployee(
+    @PreAuthorize("hasAuthority('OWNER')")
+    @PostMapping("/employee/restaurant/{id}")
+    public ResponseEntity<Void> saveEmployee(
+            @PathVariable("id") Long restaurantId,
+            @RequestAttribute("auth.userId") Long userId,
             @Valid @RequestBody EmployeeRequestDto employeeRequestDto) {
-        EmployeeResponseDto response =
-                userHandler.saveEmployee(employeeRequestDto);
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(response);
+                userHandler.saveEmployee(employeeRequestDto, restaurantId, userId);
+                return new ResponseEntity<>(HttpStatus.CREATED);
     }
 }

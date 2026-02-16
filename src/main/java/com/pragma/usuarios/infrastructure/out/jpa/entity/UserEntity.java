@@ -27,21 +27,21 @@ public class UserEntity {
     @Column(nullable = false)
     private String lastName;
 
-    @Column(nullable = false)
-    private String DocumentNumber;
+    @Column(nullable = false, unique = true)
+    private String documentNumber;
 
     @Column(nullable = false)
-    private String PhoneNumber;
+    private String phoneNumber;
 
-    private LocalDate BirthDate;
+    private LocalDate birthDate;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String email;
 
     @Column(nullable = false)
     private String password;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private Rol rol;
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "id_rol", nullable = false)
+    private RolEntity rol;
 }

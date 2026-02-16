@@ -9,7 +9,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.Mockito.*;
 
@@ -17,45 +19,110 @@ import static org.mockito.Mockito.*;
 public class UserJpAdapterTest {
 
     @Mock
-    private IUserRepository usuarioRepository;
+    private IUserRepository userRepository;
 
     @Mock
-    private IUserEntityMapper usuarioEntityMapper;
+    private IUserEntityMapper userEntityMapper;
 
     @InjectMocks
-    private UserJpaAdapter usuarioJpaAdapter;
+    private UserJpaAdapter userJpaAdapter;
 
     @Test
     void deberiaMapearGuardarYRetornarUserCorrectamente() {
-        // Arrange
         User user = new User();
         UserEntity userEntity = new UserEntity();
         UserEntity userEntityGuardado = new UserEntity();
 
-        when(usuarioEntityMapper.toEntity(user))
+        when(userEntityMapper.toEntity(user))
                 .thenReturn(userEntity);
 
-        when(usuarioRepository.save(userEntity))
+        when(userRepository.save(userEntity))
                 .thenReturn(userEntityGuardado);
 
-        when(usuarioEntityMapper.toUser(userEntityGuardado))
+        when(userEntityMapper.toUser(userEntityGuardado))
                 .thenReturn(user);
 
-        // Act
-        User resultado = usuarioJpaAdapter.saveUser(user);
+        User result = userJpaAdapter.saveUser(user);
 
-        // Assert
-        assertSame(user, resultado);
+        assertSame(user, result);
 
-        verify(usuarioEntityMapper, times(1))
+        verify(userEntityMapper, times(1))
                 .toEntity(user);
 
-        verify(usuarioRepository, times(1))
+        verify(userRepository, times(1))
                 .save(userEntity);
 
-        verify(usuarioEntityMapper, times(1))
+        verify(userEntityMapper, times(1))
                 .toUser(userEntityGuardado);
 
-        verifyNoMoreInteractions(usuarioRepository, usuarioEntityMapper);
+        verifyNoMoreInteractions(userRepository, userEntityMapper);
+    }
+
+    @Test
+    void shouldSaveEmployeeAndReturnId() {
+        User user = new User();
+        UserEntity userEntity = new UserEntity();
+        userEntity.setId(1L);
+
+        when(userEntityMapper.toEntity(user)).thenReturn(userEntity);
+        when(userRepository.save(userEntity)).thenReturn(userEntity);
+
+        Long result = userJpaAdapter.saveEmployee(user);
+
+        assertEquals(1L, result);
+        verify(userRepository).save(userEntity);
+    }
+
+    @Test
+    void shouldFindUserByEmail() {
+        String email = "juan@email.com";
+        UserEntity userEntity = new UserEntity();
+        User user = new User();
+
+        when(userRepository.findByEmail(email)).thenReturn(Optional.of(userEntity));
+        when(userEntityMapper.toUser(userEntity)).thenReturn(user);
+
+        Optional<User> result = userJpaAdapter.findByEmail(email);
+
+        assertTrue(result.isPresent());
+        assertEquals(user, result.get());
+        verify(userRepository).findByEmail(email);
+    }
+
+    @Test
+    void shouldReturnEmptyWhenUserNotFoundByEmail() {
+        String email = "noexiste@email.com";
+
+        when(userRepository.findByEmail(email)).thenReturn(Optional.empty());
+
+        Optional<User> result = userJpaAdapter.findByEmail(email);
+
+        assertTrue(result.isEmpty());
+        verify(userRepository).findByEmail(email);
+        verifyNoInteractions(userEntityMapper);
+    }
+
+    @Test
+    void shouldReturnTrueWhenDocumentNumberExists() {
+        String documentNumber = "123456789";
+
+        when(userRepository.existsByDocumentNumber(documentNumber)).thenReturn(true);
+
+        boolean result = userJpaAdapter.existsByDocumentNumber(documentNumber);
+
+        assertTrue(result);
+        verify(userRepository).existsByDocumentNumber(documentNumber);
+    }
+
+    @Test
+    void shouldReturnTrueWhenEmailExists() {
+        String email = "juan@email.com";
+
+        when(userRepository.existsByEmail(email)).thenReturn(true);
+
+        boolean result = userJpaAdapter.existsByEmail(email);
+
+        assertTrue(result);
+        verify(userRepository).existsByEmail(email);
     }
 }
