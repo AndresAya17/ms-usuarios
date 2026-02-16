@@ -7,5 +7,5 @@ import com.pragma.usuarios.application.dto.response.EmployeeResponseDto;
 public interface IUserHandler {
     void saveOwner(UserRequestDto userRequestDto);
     void saveClient(UserRequestDto userRequestDto);
-    EmployeeResponseDto saveEmployee(EmployeeRequestDto employeeRequestDto);
+    void saveEmployee(EmployeeRequestDto employeeRequestDto, Long restaurantId, Long userId);
 }

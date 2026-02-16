@@ -47,6 +47,8 @@ public class JwtFilter extends OncePerRequestFilter {
                 List<GrantedAuthority> authorities =
                         List.of(new SimpleGrantedAuthority(rol));
 
+                request.setAttribute("auth.userId", userId);
+
                 System.out.println("JWT roleId = {}" + rol);
                 System.out.println("Authorities = {}" + authorities);
 

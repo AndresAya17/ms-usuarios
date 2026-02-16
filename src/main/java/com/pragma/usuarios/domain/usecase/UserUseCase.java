@@ -8,15 +8,18 @@ import com.pragma.usuarios.domain.model.Rol;
 import com.pragma.usuarios.domain.model.User;
 import com.pragma.usuarios.domain.service.UserDomainValidator;
 import com.pragma.usuarios.domain.spi.IPasswordEncoderPersistencePort;
+import com.pragma.usuarios.domain.spi.IRestaurantPersistencePort;
 import com.pragma.usuarios.domain.spi.IUserPersistencePort;
 
 public class UserUseCase implements IUserServicePort {
     private final IUserPersistencePort userPersistencePort;
     private final IPasswordEncoderPersistencePort passwordEncoderPersistencePort;
+    private final IRestaurantPersistencePort restaurantPersistencePort;
 
-    public UserUseCase(IUserPersistencePort userPersistencePort, IPasswordEncoderPersistencePort passwordEncoderPersistencePort){
+    public UserUseCase(IUserPersistencePort userPersistencePort, IPasswordEncoderPersistencePort passwordEncoderPersistencePort, IRestaurantPersistencePort restaurantPersistencePort){
         this.userPersistencePort = userPersistencePort;
         this.passwordEncoderPersistencePort = passwordEncoderPersistencePort;
+        this.restaurantPersistencePort = restaurantPersistencePort;
     }
 
     @Override
@@ -44,15 +47,16 @@ public class UserUseCase implements IUserServicePort {
     }
 
     @Override
-    public Long saveEmployee(User employee) {
+    public void saveEmployee(User employee, Long restaurantId, Long userId) {
+        restaurantPersistencePort.validateOwner(restaurantId, userId);
         UserDomainValidator.validateUser(employee);
         validateUserUniqueness(employee);
-        employee.setRol(new Rol(DomainConstants.OWNER_ID));
+        employee.setRol(new Rol(DomainConstants.EMPLOYEE_ID));
         String encryptedPassword =
                 passwordEncoderPersistencePort.encode(employee.getPassword());
         employee.setPassword(encryptedPassword);
-        return userPersistencePort.saveEmployee(employee);
-
+        Long employeeId = userPersistencePort.saveEmployee(employee);
+        restaurantPersistencePort.createEmployeeRestaurant(employeeId, restaurantId);
     }
 
     private void validateUserUniqueness(User user) {

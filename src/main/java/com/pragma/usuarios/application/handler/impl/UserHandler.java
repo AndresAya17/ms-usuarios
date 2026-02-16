@@ -32,10 +32,9 @@ public class UserHandler implements IUserHandler {
     }
 
     @Override
-    public EmployeeResponseDto saveEmployee(EmployeeRequestDto employeeRequestDto) {
+    public void saveEmployee(EmployeeRequestDto employeeRequestDto, Long restaurantId, Long userId) {
         User user = userRequestMapper.employeeToUser(employeeRequestDto);
-        Long userId = userServicePort.saveEmployee(user);
-        return new EmployeeResponseDto(userId);
+        userServicePort.saveEmployee(user, restaurantId, userId);
     }
 
 

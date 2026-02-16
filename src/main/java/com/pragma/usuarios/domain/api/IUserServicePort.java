@@ -9,5 +9,5 @@ public interface IUserServicePort {
 
     void saveClient(User user);
 
-    Long saveEmployee(User employee);
+    void saveEmployee(User employee, Long restaurantId, Long userId);
 }

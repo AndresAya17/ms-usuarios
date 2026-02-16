@@ -73,14 +73,14 @@ public class UserRestController {
             @ApiResponse(responseCode = "403", description = "Forbidden"),
             @ApiResponse(responseCode = "409", description = "User already exists")
     })
-    @PreAuthorize("hasAuthority('ROLE_2')")
-    @PostMapping("/employee")
-    public ResponseEntity<EmployeeResponseDto> saveEmployee(
+    @PreAuthorize("hasAuthority('OWNER')")
+    @PostMapping("/employee/restaurant/{id}")
+    public ResponseEntity<Void> saveEmployee(
+            @PathVariable("id") Long restaurantId,
+            @RequestAttribute("auth.userId") Long userId,
             @Valid @RequestBody EmployeeRequestDto employeeRequestDto) {
-        EmployeeResponseDto response =
-                userHandler.saveEmployee(employeeRequestDto);
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(response);
+                System.out.println("USER ID FROM TOKEN: " + userId);
+                userHandler.saveEmployee(employeeRequestDto, restaurantId, userId);
+                return new ResponseEntity<>(HttpStatus.CREATED);
     }
 }
