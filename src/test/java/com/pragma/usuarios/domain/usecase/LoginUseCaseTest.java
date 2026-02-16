@@ -50,8 +50,10 @@ class LoginUseCaseTest {
         String rawPassword = "password123";
         String encodedPassword = "encodedPassword";
         String token = "jwt-token";
+        String roleName = "ADMIN";
 
         Rol rol = new Rol(1L);
+        rol.setName(roleName);
 
         User user = new User();
         user.setId(1L);
@@ -65,7 +67,7 @@ class LoginUseCaseTest {
         when(passwordEncoderPersistencePort.matches(rawPassword, encodedPassword))
                 .thenReturn(true);
 
-        when(jwtPersistencePort.generateToken(1L, 1L))
+        when(jwtPersistencePort.generateToken(1L, roleName))
                 .thenReturn(token);
 
         LoginResponseDto response = loginUseCase.login(email, rawPassword);
@@ -73,12 +75,15 @@ class LoginUseCaseTest {
         assertNotNull(response);
         assertEquals(1L, response.getUserId());
         assertEquals(email, response.getEmail());
-        assertEquals("1", response.getRol());   // 👈 ID COMO STRING
+        assertEquals(roleName, response.getRol());
         assertEquals(token, response.getToken());
 
         verify(userPersistencePort).findByEmail(email);
-        verify(passwordEncoderPersistencePort).matches(rawPassword, encodedPassword);
-        verify(jwtPersistencePort).generateToken(1L, 1L);
+        verify(passwordEncoderPersistencePort)
+                .matches(rawPassword, encodedPassword);
+        verify(jwtPersistencePort)
+                .generateToken(1L, roleName);
+
         verifyNoMoreInteractions(
                 userPersistencePort,
                 passwordEncoderPersistencePort,

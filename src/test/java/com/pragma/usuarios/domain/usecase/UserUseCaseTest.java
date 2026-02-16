@@ -1,10 +1,12 @@
 package com.pragma.usuarios.domain.usecase;
 
+import com.pragma.usuarios.domain.constants.DomainConstants;
 import com.pragma.usuarios.domain.exception.DomainException;
 import com.pragma.usuarios.domain.exception.ErrorCode;
 import com.pragma.usuarios.domain.model.Rol;
 import com.pragma.usuarios.domain.model.User;
 import com.pragma.usuarios.domain.spi.IPasswordEncoderPersistencePort;
+import com.pragma.usuarios.domain.spi.IRestaurantPersistencePort;
 import com.pragma.usuarios.domain.spi.IUserPersistencePort;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -26,6 +28,9 @@ class UserUseCaseTest {
     @Mock
     private IPasswordEncoderPersistencePort passwordEncoderPersistencePort;
 
+    @Mock
+    private IRestaurantPersistencePort restaurantPersistencePort;
+
     private UserUseCase userUseCase;
 
     private User user;
@@ -38,7 +43,8 @@ class UserUseCaseTest {
 
         userUseCase = new UserUseCase(
                 userPersistencePort,
-                passwordEncoderPersistencePort
+                passwordEncoderPersistencePort,
+                restaurantPersistencePort
         );
     }
 
@@ -103,6 +109,10 @@ class UserUseCaseTest {
 
     @Test
     void shouldSaveEmployeeWhenRoleIsOwner() {
+        Long restaurantId = 1L;
+        Long userId = 99L;
+        Long expectedEmployeeId = 10L;
+
         User employee = new User();
         employee.setFirstName("John");
         employee.setLastName("Doe");
@@ -113,21 +123,51 @@ class UserUseCaseTest {
         employee.setPassword("plainPassword");
 
         String encryptedPassword = "encryptedPassword";
-        Long expectedId = 1L;
 
         when(passwordEncoderPersistencePort.encode("plainPassword"))
                 .thenReturn(encryptedPassword);
 
+        when(userPersistencePort.existsByEmail(employee.getEmail()))
+                .thenReturn(false);
+
+        when(userPersistencePort.existsByDocumentNumber(employee.getDocumentNumber()))
+                .thenReturn(false);
+
         when(userPersistencePort.saveEmployee(any(User.class)))
-                .thenReturn(expectedId);
+                .thenReturn(expectedEmployeeId);
 
-        Long result = userUseCase.saveEmployee(employee);
+        doNothing().when(restaurantPersistencePort)
+                .validateOwner(restaurantId, userId);
 
-        assertEquals(expectedId, result);
+        doNothing().when(restaurantPersistencePort)
+                .createEmployeeRestaurant(expectedEmployeeId, restaurantId);
+
+        userUseCase.saveEmployee(employee, restaurantId, userId);
+
         assertEquals(encryptedPassword, employee.getPassword());
+        assertEquals(DomainConstants.EMPLOYEE_ID, employee.getRol().getId());
 
-        verify(passwordEncoderPersistencePort).encode("plainPassword");
-        verify(userPersistencePort).saveEmployee(employee);
+        verify(restaurantPersistencePort)
+                .validateOwner(restaurantId, userId);
+        verify(userPersistencePort)
+                .existsByEmail(employee.getEmail());
+        verify(userPersistencePort)
+                .existsByDocumentNumber(employee.getDocumentNumber());
+
+        verify(passwordEncoderPersistencePort)
+                .encode("plainPassword");
+
+        verify(userPersistencePort)
+                .saveEmployee(employee);
+
+        verify(restaurantPersistencePort)
+                .createEmployeeRestaurant(expectedEmployeeId, restaurantId);
+
+        verifyNoMoreInteractions(
+                userPersistencePort,
+                passwordEncoderPersistencePort,
+                restaurantPersistencePort
+        );
     }
 
     @Test
@@ -156,24 +196,42 @@ class UserUseCaseTest {
     }
     @Test
     void shouldThrowExceptionWhenEmailAlreadyExists() {
+        Long restaurantId = 1L;
+        Long userId = 99L;
+
         User user = buildValidClientUser();
+
         when(userPersistencePort.existsByEmail(user.getEmail()))
                 .thenReturn(true);
 
+        doNothing().when(restaurantPersistencePort)
+                .validateOwner(restaurantId, userId);
+
         DomainException exception = assertThrows(
                 DomainException.class,
-                () -> userUseCase.saveEmployee(user)
+                () -> userUseCase.saveEmployee(user, restaurantId, userId)
         );
 
         assertEquals(ErrorCode.INVALID_USER, exception.getErrorCode());
         assertEquals("Email already exists", exception.getMessage());
 
-        verify(userPersistencePort).existsByEmail(user.getEmail());
-        verifyNoMoreInteractions(userPersistencePort);
+        verify(restaurantPersistencePort)
+                .validateOwner(restaurantId, userId);
+
+        verify(userPersistencePort)
+                .existsByEmail(user.getEmail());
+
+        verifyNoMoreInteractions(
+                userPersistencePort,
+                restaurantPersistencePort
+        );
     }
 
     @Test
     void shouldThrowExceptionWhenDocumentNumberAlreadyExists() {
+        Long restaurantId = 1L;
+        Long userId = 99L;
+
         User user = buildValidClientUser();
 
         when(userPersistencePort.existsByEmail(user.getEmail()))
@@ -182,15 +240,29 @@ class UserUseCaseTest {
         when(userPersistencePort.existsByDocumentNumber(user.getDocumentNumber()))
                 .thenReturn(true);
 
+        doNothing().when(restaurantPersistencePort)
+                .validateOwner(restaurantId, userId);
+
         DomainException exception = assertThrows(
                 DomainException.class,
-                () -> userUseCase.saveEmployee(user)
+                () -> userUseCase.saveEmployee(user, restaurantId, userId)
         );
 
         assertEquals(ErrorCode.INVALID_USER, exception.getErrorCode());
         assertEquals("Document number already exists", exception.getMessage());
 
-        verify(userPersistencePort).existsByEmail(user.getEmail());
-        verify(userPersistencePort).existsByDocumentNumber(user.getDocumentNumber());
+        verify(restaurantPersistencePort)
+                .validateOwner(restaurantId, userId);
+
+        verify(userPersistencePort)
+                .existsByEmail(user.getEmail());
+
+        verify(userPersistencePort)
+                .existsByDocumentNumber(user.getDocumentNumber());
+
+        verifyNoMoreInteractions(
+                userPersistencePort,
+                restaurantPersistencePort
+        );
     }
 }

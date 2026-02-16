@@ -22,7 +22,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class IUserEntityMapperTest {
 
     @Mock
-    private IRolRequestMapper rolRequestMapper;
+    private IRoleEntityMapper rolEntityMapper;
 
     @InjectMocks
     private IUserEntityMapperImpl mapper;
@@ -43,11 +43,10 @@ public class IUserEntityMapperTest {
         user.setPassword("password123");
         user.setRol(rol);
 
-        RolEntity rolEntity = new RolEntity();
-        rolEntity.setId(2L);
+        RolEntity roleEntity = new RolEntity();
+        roleEntity.setId(2L);
 
-        when(rolRequestMapper.toEntity(rol))
-                .thenReturn(rolEntity);
+        when(rolEntityMapper.toEntity(rol)).thenReturn(roleEntity);
 
         UserEntity entity = mapper.toEntity(user);
 
@@ -64,7 +63,7 @@ public class IUserEntityMapperTest {
         assertNotNull(entity.getRol());
         assertEquals(2L, entity.getRol().getId());
 
-        verify(rolRequestMapper).toEntity(rol);
+        verify(rolEntityMapper).toEntity(rol);
     }
 
     @Test

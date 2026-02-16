@@ -71,16 +71,22 @@ class UserHandlerTest {
 
     @Test
     void shouldSaveEmployeeSuccessfully() {
-        Long expectedUserId = 10L;
+        Long restaurantId = 1L;
+        Long userId = 5L;
+
         when(userRequestMapper.employeeToUser(employeeRequestDto)).thenReturn(user);
-        when(userServicePort.saveEmployee(user)).thenReturn(expectedUserId);
 
-        EmployeeResponseDto response = userHandler.saveEmployee(employeeRequestDto);
+        doNothing().when(userServicePort)
+                .saveEmployee(user, restaurantId, userId);
 
-        assertEquals(expectedUserId, response.getEmployeeUserId());
+        userHandler.saveEmployee(employeeRequestDto, restaurantId, userId);
 
-        verify(userRequestMapper, times(1)).employeeToUser(employeeRequestDto);
-        verify(userServicePort, times(1)).saveEmployee(user);
+        verify(userRequestMapper, times(1))
+                .employeeToUser(employeeRequestDto);
+
+        verify(userServicePort, times(1))
+                .saveEmployee(user, restaurantId, userId);
+
         verifyNoMoreInteractions(userServicePort, userRequestMapper);
     }
 

@@ -3,7 +3,6 @@ package com.pragma.usuarios.infrastructure.input.rest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pragma.usuarios.application.dto.request.EmployeeRequestDto;
 import com.pragma.usuarios.application.dto.request.UserRequestDto;
-import com.pragma.usuarios.application.dto.response.EmployeeResponseDto;
 import com.pragma.usuarios.application.handler.IUserHandler;
 import com.pragma.usuarios.domain.spi.IJwtPersistencePort;
 import org.junit.jupiter.api.Test;
@@ -19,12 +18,12 @@ import org.springframework.security.test.context.support.WithMockUser;
 
 import static org.mockito.Mockito.doNothing;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.eq;
 
 @WebMvcTest(UserRestController.class)
 @AutoConfigureMockMvc(addFilters = false)
@@ -113,8 +112,11 @@ class UserRestControllerTest {
 
 
     @Test
-    @WithMockUser(authorities = "ROLE_2")
+    @WithMockUser(authorities = "OWNER")
     void shouldReturn201WhenCreateEmployeeIsValidAndAuthorized() throws Exception {
+        Long restaurantId = 1L;
+        Long userId = 99L;
+
         EmployeeRequestDto dto = new EmployeeRequestDto();
         dto.setFirstName("Juan");
         dto.setLastName("Perez");
@@ -123,30 +125,31 @@ class UserRestControllerTest {
         dto.setEmail("juan@email.com");
         dto.setPassword("password123");
 
-        EmployeeResponseDto responseDto =
-                new EmployeeResponseDto(1L);
-
-        when(userHandler.saveEmployee(any(EmployeeRequestDto.class)))
-                .thenReturn(responseDto);
+        doNothing().when(userHandler)
+                .saveEmployee(any(EmployeeRequestDto.class), eq(restaurantId), anyLong());
 
         mockMvc.perform(
-                        post("/api/v1/user/employee")
+                        post("/api/v1/user/employee/restaurant/{id}", restaurantId)
+                                .requestAttr("auth.userId", userId)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(dto))
                 )
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.employeeUserId").value(1L));
+                .andExpect(status().isCreated());
 
-        verify(userHandler).saveEmployee(any(EmployeeRequestDto.class));
+        verify(userHandler)
+                .saveEmployee(any(EmployeeRequestDto.class), eq(restaurantId), eq(userId));
     }
 
     @Test
     void shouldReturn400WhenCreateEmployeeRequestIsInvalid() throws Exception {
+        Long restaurantId = 1L;
+        Long userId = 99L;
+
         EmployeeRequestDto dto = new EmployeeRequestDto();
 
         mockMvc.perform(
-                        post("/api/v1/user/employee")
-                                .requestAttr("auth.rol", "ROLE_2")
+                        post("/api/v1/user/employee/restaurant/{id}", restaurantId)
+                                .requestAttr("auth.userId", userId)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(dto))
                 )

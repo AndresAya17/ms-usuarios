@@ -79,7 +79,6 @@ public class UserRestController {
             @PathVariable("id") Long restaurantId,
             @RequestAttribute("auth.userId") Long userId,
             @Valid @RequestBody EmployeeRequestDto employeeRequestDto) {
-                System.out.println("USER ID FROM TOKEN: " + userId);
                 userHandler.saveEmployee(employeeRequestDto, restaurantId, userId);
                 return new ResponseEntity<>(HttpStatus.CREATED);
     }
