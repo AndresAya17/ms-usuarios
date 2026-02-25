@@ -3,6 +3,7 @@ package com.pragma.usuarios.infrastructure.input.rest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pragma.usuarios.application.dto.request.EmployeeRequestDto;
 import com.pragma.usuarios.application.dto.request.UserRequestDto;
+import com.pragma.usuarios.application.dto.response.ClientPhoneResponse;
 import com.pragma.usuarios.application.handler.IUserHandler;
 import com.pragma.usuarios.domain.spi.IJwtPersistencePort;
 import org.junit.jupiter.api.Test;
@@ -18,12 +19,15 @@ import org.springframework.security.test.context.support.WithMockUser;
 
 import static org.mockito.Mockito.doNothing;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verify;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
 @WebMvcTest(UserRestController.class)
 @AutoConfigureMockMvc(addFilters = false)
@@ -156,6 +160,24 @@ class UserRestControllerTest {
                 .andExpect(status().isBadRequest());
 
         verifyNoInteractions(userHandler);
+    }
+
+    @Test
+    void shouldReturn200WhenGetPhoneClient() throws Exception {
+        Long userId = 1L;
+
+        ClientPhoneResponse response = new ClientPhoneResponse("+573001234567");
+
+        when(userHandler.getPhoneClient(userId)).thenReturn(response);
+
+        mockMvc.perform(
+                        get("/api/v1/user/client/{id}/phone", userId)
+                                .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.phoneNumber").value("+573001234567"));
+
+        verify(userHandler).getPhoneClient(userId);
     }
 
 }

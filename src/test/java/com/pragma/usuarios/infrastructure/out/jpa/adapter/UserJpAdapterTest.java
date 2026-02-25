@@ -125,4 +125,30 @@ public class UserJpAdapterTest {
         assertTrue(result);
         verify(userRepository).existsByEmail(email);
     }
+    @Test
+    void shouldReturnUserWhenFindByIdExists() {
+
+        Long userId = 1L;
+
+        UserEntity entity = new UserEntity();
+        entity.setId(userId);
+
+        User user = new User();
+        user.setId(userId);
+
+        when(userRepository.findById(userId))
+                .thenReturn(Optional.of(entity));
+
+        when(userEntityMapper.toUser(entity))
+                .thenReturn(user);
+
+        Optional<User> result = userJpaAdapter.findById(userId);
+
+        assertTrue(result.isPresent());
+        assertEquals(userId, result.get().getId());
+
+        verify(userRepository).findById(userId);
+        verify(userEntityMapper).toUser(entity);
+    }
+
 }

@@ -15,6 +15,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -57,6 +58,48 @@ class UserUseCaseTest {
         user.setEmail("juan@email.com");
         user.setPassword("plainPassword123");
         user.setBirthDate(LocalDate.now().minusYears(20));
+        return user;
+    }
+
+    private User buildValidClientUserWithRole() {
+
+        User user = new User();
+        user.setId(1L);
+        user.setFirstName("Juan");
+        user.setLastName("Perez");
+        user.setDocumentNumber("123456789");
+        user.setPhoneNumber("+573001234567");
+        user.setEmail("juan@email.com");
+        user.setPassword("plainPassword123");
+        user.setBirthDate(LocalDate.now().minusYears(20));
+
+        Rol rol = new Rol();
+        rol.setId(DomainConstants.CLIENT_ID);
+        rol.setName("CLIENT");
+
+        user.setRol(rol);
+
+        return user;
+    }
+
+    private User buildValidOwnerUserWithRole() {
+
+        User user = new User();
+        user.setId(1L);
+        user.setFirstName("Juan");
+        user.setLastName("Perez");
+        user.setDocumentNumber("123456789");
+        user.setPhoneNumber("+573001234567");
+        user.setEmail("juan@email.com");
+        user.setPassword("plainPassword123");
+        user.setBirthDate(LocalDate.now().minusYears(20));
+
+        Rol rol = new Rol();
+        rol.setId(999L); // cualquier id distinto a CLIENT_ID
+        rol.setName("OWNER");
+
+        user.setRol(rol);
+
         return user;
     }
 
@@ -264,5 +307,64 @@ class UserUseCaseTest {
                 userPersistencePort,
                 restaurantPersistencePort
         );
+    }
+    @Test
+    void shouldThrowExceptionWhenUserNotFound() {
+
+        Long userId = 1L;
+
+        when(userPersistencePort.findById(userId))
+                .thenReturn(Optional.empty());
+
+        DomainException exception = assertThrows(
+                DomainException.class,
+                () -> userUseCase.getPhone(userId)
+        );
+
+        assertEquals(ErrorCode.DATA_NOT_FOUND, exception.getErrorCode());
+        assertEquals("User not found", exception.getMessage());
+
+        verify(userPersistencePort).findById(userId);
+        verifyNoMoreInteractions(userPersistencePort);
+    }
+
+    @Test
+    void shouldThrowExceptionWhenUserIsNotClient() {
+
+        Long userId = 1L;
+
+        User user = buildValidOwnerUserWithRole(); // o buildValidEmployeeUser()
+
+        when(userPersistencePort.findById(userId))
+                .thenReturn(Optional.of(user));
+
+        DomainException exception = assertThrows(
+                DomainException.class,
+                () -> userUseCase.getPhone(userId)
+        );
+
+        assertEquals(ErrorCode.INVALID_OPERATION, exception.getErrorCode());
+        assertEquals("Phone can only be retrieved for clients", exception.getMessage());
+
+        verify(userPersistencePort).findById(userId);
+        verifyNoMoreInteractions(userPersistencePort);
+    }
+
+    @Test
+    void shouldReturnPhoneWhenUserIsClient() {
+
+        Long userId = 1L;
+
+        User user = buildValidClientUserWithRole();
+
+        when(userPersistencePort.findById(userId))
+                .thenReturn(Optional.of(user));
+
+        String phone = userUseCase.getPhone(userId);
+
+        assertEquals(user.getPhoneNumber(), phone);
+
+        verify(userPersistencePort).findById(userId);
+        verifyNoMoreInteractions(userPersistencePort);
     }
 }
