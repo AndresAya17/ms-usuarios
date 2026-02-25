@@ -43,4 +43,10 @@ public class UserJpaAdapter implements IUserPersistencePort {
         return userRepository.existsByEmail(email);
     }
 
+    @Override
+    public Optional<User> findById(Long userId) {
+        return userRepository.findById(userId)
+                .map(userEntityMapper::toUser);
+    }
+
 }

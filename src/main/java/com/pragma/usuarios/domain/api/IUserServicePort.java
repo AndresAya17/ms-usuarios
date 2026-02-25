@@ -10,4 +10,6 @@ public interface IUserServicePort {
     void saveClient(User user);
 
     void saveEmployee(User employee, Long restaurantId, Long userId);
+
+    String getPhone(Long userId);
 }

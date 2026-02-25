@@ -59,6 +59,24 @@ public class UserUseCase implements IUserServicePort {
         restaurantPersistencePort.createEmployeeRestaurant(employeeId, restaurantId);
     }
 
+    @Override
+    public String getPhone(Long userId) {
+        User user = userPersistencePort.findById(userId)
+                .orElseThrow(() -> new DomainException(
+                        ErrorCode.DATA_NOT_FOUND,
+                        "User not found"
+                ));
+
+        if (!user.getRol().getId().equals(DomainConstants.CLIENT_ID)) {
+            throw new DomainException(
+                    ErrorCode.INVALID_OPERATION,
+                    "Phone can only be retrieved for clients"
+            );
+        }
+
+        return user.getPhoneNumber();
+    }
+
     private void validateUserUniqueness(User user) {
 
         if (userPersistencePort.existsByEmail(user.getEmail())) {
