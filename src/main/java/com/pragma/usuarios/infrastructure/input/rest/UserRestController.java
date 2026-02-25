@@ -89,6 +89,7 @@ public class UserRestController {
             @PathVariable Long id) {
         return ResponseEntity.ok(userHandler.getPhoneClient(id));
     }
+    
 
 
 }
