@@ -2,7 +2,7 @@ package com.pragma.usuarios.application.handler.impl;
 
 import com.pragma.usuarios.application.dto.request.EmployeeRequestDto;
 import com.pragma.usuarios.application.dto.request.UserRequestDto;
-import com.pragma.usuarios.application.dto.response.EmployeeResponseDto;
+import com.pragma.usuarios.application.dto.response.ClientPhoneResponse;
 import com.pragma.usuarios.application.handler.IUserHandler;
 import com.pragma.usuarios.application.mapper.IUserRequestMapper;
 import com.pragma.usuarios.domain.api.IUserServicePort;
@@ -35,6 +35,11 @@ public class UserHandler implements IUserHandler {
     public void saveEmployee(EmployeeRequestDto employeeRequestDto, Long restaurantId, Long userId) {
         User user = userRequestMapper.employeeToUser(employeeRequestDto);
         userServicePort.saveEmployee(user, restaurantId, userId);
+    }
+
+    @Override
+    public ClientPhoneResponse getPhoneClient(Long userId) {
+        return new ClientPhoneResponse(userServicePort.getPhone(userId));
     }
 
 

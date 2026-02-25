@@ -2,6 +2,7 @@ package com.pragma.usuarios.infrastructure.input.rest;
 
 import com.pragma.usuarios.application.dto.request.EmployeeRequestDto;
 import com.pragma.usuarios.application.dto.request.UserRequestDto;
+import com.pragma.usuarios.application.dto.response.ClientPhoneResponse;
 import com.pragma.usuarios.application.dto.response.EmployeeResponseDto;
 import com.pragma.usuarios.application.handler.IUserHandler;
 import io.swagger.v3.oas.annotations.Operation;
@@ -82,4 +83,13 @@ public class UserRestController {
                 userHandler.saveEmployee(employeeRequestDto, restaurantId, userId);
                 return new ResponseEntity<>(HttpStatus.CREATED);
     }
+
+    @GetMapping("/client/{id}/phone")
+    public ResponseEntity<ClientPhoneResponse> getPhone(
+            @PathVariable Long id) {
+        return ResponseEntity.ok(userHandler.getPhoneClient(id));
+    }
+    
+
+
 }
