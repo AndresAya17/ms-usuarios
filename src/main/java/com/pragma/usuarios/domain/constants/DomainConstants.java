@@ -13,4 +13,12 @@ public final class DomainConstants {
     public static final Long OWNER_ID = 2L;
     public static final Long EMPLOYEE_ID = 3L;
     public static final Long CLIENT_ID = 4L;
+
+    //Usecase
+    public static final String UNF = "User not found";
+    public static final String PCN = "Phone can only be retrieved for clients";
+    public static final String EAE = "Email already exists";
+    public static final String DNA = "Document number already exists";
+    public static final String EPI = "Email or Password incorrect";
+
 }

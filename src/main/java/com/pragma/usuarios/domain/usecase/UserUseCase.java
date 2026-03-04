@@ -64,13 +64,13 @@ public class UserUseCase implements IUserServicePort {
         User user = userPersistencePort.findById(userId)
                 .orElseThrow(() -> new DomainException(
                         ErrorCode.DATA_NOT_FOUND,
-                        "User not found"
+                        DomainConstants.UNF
                 ));
 
         if (!user.getRol().getId().equals(DomainConstants.CLIENT_ID)) {
             throw new DomainException(
                     ErrorCode.INVALID_OPERATION,
-                    "Phone can only be retrieved for clients"
+                    DomainConstants.PCN
             );
         }
 
@@ -82,14 +82,14 @@ public class UserUseCase implements IUserServicePort {
         if (userPersistencePort.existsByEmail(user.getEmail())) {
             throw new DomainException(
                     ErrorCode.INVALID_USER,
-                    "Email already exists"
+                    DomainConstants.EAE
             );
         }
 
         if (userPersistencePort.existsByDocumentNumber(user.getDocumentNumber())) {
             throw new DomainException(
                     ErrorCode.INVALID_USER,
-                    "Document number already exists"
+                    DomainConstants.DNA
             );
         }
     }
