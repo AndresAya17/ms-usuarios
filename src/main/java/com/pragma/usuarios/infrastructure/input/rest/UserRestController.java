@@ -5,6 +5,7 @@ import com.pragma.usuarios.application.dto.request.UserRequestDto;
 import com.pragma.usuarios.application.dto.response.ClientPhoneResponse;
 import com.pragma.usuarios.application.dto.response.EmployeeResponseDto;
 import com.pragma.usuarios.application.handler.IUserHandler;
+import com.pragma.usuarios.infrastructure.out.jpa.util.SecurityConstants;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -30,7 +31,7 @@ public class UserRestController {
             @ApiResponse(responseCode = "201", description = "User created", content = @Content),
             @ApiResponse(responseCode = "409", description = "User already exists", content = @Content)
     })
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize(SecurityConstants.HAS_ADMIN)
     @PostMapping("/owner")
     public ResponseEntity<Void> saveOwner(
             @Valid @RequestBody UserRequestDto userRequestDto) {
@@ -74,7 +75,7 @@ public class UserRestController {
             @ApiResponse(responseCode = "403", description = "Forbidden"),
             @ApiResponse(responseCode = "409", description = "User already exists")
     })
-    @PreAuthorize("hasAuthority('OWNER')")
+    @PreAuthorize(SecurityConstants.HAS_OWNER)
     @PostMapping("/employee/restaurant/{id}")
     public ResponseEntity<Void> saveEmployee(
             @PathVariable("id") Long restaurantId,
@@ -89,7 +90,7 @@ public class UserRestController {
             @PathVariable Long id) {
         return ResponseEntity.ok(userHandler.getPhoneClient(id));
     }
-    
+
 
 
 }
