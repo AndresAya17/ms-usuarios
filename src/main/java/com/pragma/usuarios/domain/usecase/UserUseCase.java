@@ -77,6 +77,24 @@ public class UserUseCase implements IUserServicePort {
         return user.getPhoneNumber();
     }
 
+    @Override
+    public String getEmail(Long userId) {
+        User user = userPersistencePort.findById(userId)
+                .orElseThrow(() -> new DomainException(
+                        ErrorCode.DATA_NOT_FOUND,
+                        DomainConstants.UNF
+                ));
+
+        if (!user.getRol().getId().equals(DomainConstants.EMPLOYEE_ID)) {
+            throw new DomainException(
+                    ErrorCode.INVALID_OPERATION,
+                    DomainConstants.ECE
+            );
+        }
+
+        return user.getEmail();
+    }
+
     private void validateUserUniqueness(User user) {
 
         if (userPersistencePort.existsByEmail(user.getEmail())) {

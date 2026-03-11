@@ -3,6 +3,7 @@ package com.pragma.usuarios.infrastructure.input.rest;
 import com.pragma.usuarios.application.dto.request.EmployeeRequestDto;
 import com.pragma.usuarios.application.dto.request.UserRequestDto;
 import com.pragma.usuarios.application.dto.response.ClientPhoneResponse;
+import com.pragma.usuarios.application.dto.response.EmployeeEmailResponseDto;
 import com.pragma.usuarios.application.dto.response.EmployeeResponseDto;
 import com.pragma.usuarios.application.handler.IUserHandler;
 import com.pragma.usuarios.infrastructure.out.jpa.util.SecurityConstants;
@@ -89,6 +90,12 @@ public class UserRestController {
     public ResponseEntity<ClientPhoneResponse> getPhone(
             @PathVariable Long id) {
         return ResponseEntity.ok(userHandler.getPhoneClient(id));
+    }
+
+    @GetMapping("/employee/{id}/email")
+    public ResponseEntity<EmployeeEmailResponseDto> getEmail(
+            @PathVariable Long id) {
+        return ResponseEntity.ok(userHandler.getEmailEmployee(id));
     }
 
 
