@@ -2,7 +2,8 @@ package com.pragma.usuarios.application.handler;
 
 import com.pragma.usuarios.application.dto.request.EmployeeRequestDto;
 import com.pragma.usuarios.application.dto.request.UserRequestDto;
-import com.pragma.usuarios.application.dto.response.EmployeeResponseDto;
+import com.pragma.usuarios.application.dto.response.ClientPhoneResponse;
+import com.pragma.usuarios.application.dto.response.EmployeeEmailResponseDto;
 import com.pragma.usuarios.application.handler.impl.UserHandler;
 import com.pragma.usuarios.application.mapper.IUserRequestMapper;
 import com.pragma.usuarios.domain.api.IUserServicePort;
@@ -16,6 +17,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @ExtendWith(MockitoExtension.class)
 class UserHandlerTest {
@@ -88,6 +90,36 @@ class UserHandlerTest {
                 .saveEmployee(user, restaurantId, userId);
 
         verifyNoMoreInteractions(userServicePort, userRequestMapper);
+    }
+
+    @Test
+    void shouldReturnClientPhoneResponseSuccessfully() {
+        Long userId = 1L;
+        String phone = "3001234567";
+
+        when(userServicePort.getPhone(userId)).thenReturn(phone);
+
+        ClientPhoneResponse result = userHandler.getPhoneClient(userId);
+
+        assertNotNull(result);
+        assertEquals(phone, result.getPhoneNumber());
+
+        verify(userServicePort).getPhone(userId);
+    }
+
+    @Test
+    void shouldReturnEmployeeEmailResponseSuccessfully() {
+        Long userId = 2L;
+        String email = "empleado@test.com";
+
+        when(userServicePort.getEmail(userId)).thenReturn(email);
+
+        EmployeeEmailResponseDto result = userHandler.getEmailEmployee(userId);
+
+        assertNotNull(result);
+        assertEquals(email, result.getEmail());
+
+        verify(userServicePort).getEmail(userId);
     }
 
 }

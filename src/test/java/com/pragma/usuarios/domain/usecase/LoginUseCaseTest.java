@@ -67,7 +67,7 @@ class LoginUseCaseTest {
         when(passwordEncoderPersistencePort.matches(rawPassword, encodedPassword))
                 .thenReturn(true);
 
-        when(jwtPersistencePort.generateToken(1L, roleName))
+        when(jwtPersistencePort.generateToken(1L, roleName,email))
                 .thenReturn(token);
 
         LoginResponseDto response = loginUseCase.login(email, rawPassword);
@@ -82,7 +82,7 @@ class LoginUseCaseTest {
         verify(passwordEncoderPersistencePort)
                 .matches(rawPassword, encodedPassword);
         verify(jwtPersistencePort)
-                .generateToken(1L, roleName);
+                .generateToken(1L, roleName, email);
 
         verifyNoMoreInteractions(
                 userPersistencePort,

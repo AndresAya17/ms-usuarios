@@ -367,4 +367,84 @@ class UserUseCaseTest {
         verify(userPersistencePort).findById(userId);
         verifyNoMoreInteractions(userPersistencePort);
     }
+
+    @Test
+    void shouldReturnEmailWhenUserRoleIsEmployee() {
+        Long userId = 1L;
+
+        Rol rol = new Rol();
+        rol.setId(DomainConstants.EMPLOYEE_ID);
+
+        User user = new User();
+        user.setId(userId);
+        user.setEmail("empleado@test.com");
+        user.setRol(rol);
+
+        when(userPersistencePort.findById(userId)).thenReturn(Optional.of(user));
+
+        String result = userUseCase.getEmail(userId);
+
+        assertEquals("empleado@test.com", result);
+        verify(userPersistencePort).findById(userId);
+    }
+
+    @Test
+    void shouldReturnEmailWhenUserRoleIsClient() {
+        Long userId = 2L;
+
+        Rol rol = new Rol();
+        rol.setId(DomainConstants.CLIENT_ID);
+
+        User user = new User();
+        user.setId(userId);
+        user.setEmail("cliente@test.com");
+        user.setRol(rol);
+
+        when(userPersistencePort.findById(userId)).thenReturn(Optional.of(user));
+
+        String result = userUseCase.getEmail(userId);
+
+        assertEquals("cliente@test.com", result);
+        verify(userPersistencePort).findById(userId);
+    }
+
+    @Test
+    void shouldThrowExceptionWhenUserNotFound1() {
+        Long userId = 3L;
+
+        when(userPersistencePort.findById(userId)).thenReturn(Optional.empty());
+
+        DomainException exception = assertThrows(
+                DomainException.class,
+                () -> userUseCase.getEmail(userId)
+        );
+
+        assertEquals(ErrorCode.DATA_NOT_FOUND, exception.getErrorCode());
+        assertEquals(DomainConstants.UNF, exception.getMessage());
+        verify(userPersistencePort).findById(userId);
+    }
+
+    @Test
+    void shouldThrowExceptionWhenRoleIsNotAllowed() {
+        Long userId = 4L;
+
+        Rol rol = new Rol();
+        rol.setId(99L);
+
+        User user = new User();
+        user.setId(userId);
+        user.setEmail("admin@test.com");
+        user.setRol(rol);
+
+        when(userPersistencePort.findById(userId)).thenReturn(Optional.of(user));
+
+        DomainException exception = assertThrows(
+                DomainException.class,
+                () -> userUseCase.getEmail(userId)
+        );
+
+        assertEquals(ErrorCode.INVALID_OPERATION, exception.getErrorCode());
+        assertEquals(DomainConstants.ECE, exception.getMessage());
+        verify(userPersistencePort).findById(userId);
+    }
 }

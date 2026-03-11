@@ -85,7 +85,9 @@ public class UserUseCase implements IUserServicePort {
                         DomainConstants.UNF
                 ));
 
-        if (!user.getRol().getId().equals(DomainConstants.EMPLOYEE_ID)) {
+        Long roleId = user.getRol().getId();
+
+        if (!roleId.equals(DomainConstants.EMPLOYEE_ID) && !roleId.equals(DomainConstants.CLIENT_ID) ) {
             throw new DomainException(
                     ErrorCode.INVALID_OPERATION,
                     DomainConstants.ECE
