@@ -17,6 +17,7 @@ public final class DomainConstants {
     //Usecase
     public static final String UNF = "User not found";
     public static final String PCN = "Phone can only be retrieved for clients";
+    public static final String ECE = "Email can only be retrieved for employees";
     public static final String EAE = "Email already exists";
     public static final String DNA = "Document number already exists";
     public static final String EPI = "Email or Password incorrect";

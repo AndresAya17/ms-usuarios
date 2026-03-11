@@ -15,10 +15,11 @@ public class JwtAdapter implements IJwtPersistencePort {
     private final long expirationMs = 3600000;
 
     @Override
-    public String generateToken(Long userId, String roleName) {
+    public String generateToken(Long userId, String roleName, String email) {
         return Jwts.builder()
                 .setSubject(String.valueOf(userId))
                 .claim("rol", roleName)
+                .claim("email", email)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + expirationMs))
                 .signWith(Keys.hmacShaKeyFor(secret.getBytes()), SignatureAlgorithm.HS256)

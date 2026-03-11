@@ -3,6 +3,7 @@ package com.pragma.usuarios.application.handler.impl;
 import com.pragma.usuarios.application.dto.request.EmployeeRequestDto;
 import com.pragma.usuarios.application.dto.request.UserRequestDto;
 import com.pragma.usuarios.application.dto.response.ClientPhoneResponse;
+import com.pragma.usuarios.application.dto.response.EmployeeEmailResponseDto;
 import com.pragma.usuarios.application.handler.IUserHandler;
 import com.pragma.usuarios.application.mapper.IUserRequestMapper;
 import com.pragma.usuarios.domain.api.IUserServicePort;
@@ -40,6 +41,11 @@ public class UserHandler implements IUserHandler {
     @Override
     public ClientPhoneResponse getPhoneClient(Long userId) {
         return new ClientPhoneResponse(userServicePort.getPhone(userId));
+    }
+
+    @Override
+    public EmployeeEmailResponseDto getEmailEmployee(Long userId) {
+        return new EmployeeEmailResponseDto(userServicePort.getEmail(userId));
     }
 
 

@@ -1,7 +1,7 @@
 package com.pragma.usuarios.domain.spi;
 
 public interface IJwtPersistencePort {
-    String generateToken(Long userId, String roleName);
+    String generateToken(Long userId, String roleName, String email);
 
     boolean validateToken(String token);
 

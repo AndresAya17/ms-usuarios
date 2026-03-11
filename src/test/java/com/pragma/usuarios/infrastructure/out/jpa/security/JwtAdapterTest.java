@@ -20,8 +20,9 @@ class JwtAdapterTest {
     void shouldGenerateValidToken() {
         Long userId = 1L;
         String roleName = "OWNER";
+        String email = "andresaya@gmail.com";
 
-        String token = jwtAdapter.generateToken(userId, roleName);
+        String token = jwtAdapter.generateToken(userId, roleName, email);
 
         assertNotNull(token);
         assertFalse(token.isBlank());
@@ -31,8 +32,9 @@ class JwtAdapterTest {
     void shouldValidateValidToken() {
         Long userId = 1L;
         String roleName = "OWNER";
+        String email = "andresaya@gmail.com";
 
-        String token = jwtAdapter.generateToken(userId, roleName);
+        String token = jwtAdapter.generateToken(userId, roleName, email);
 
         boolean isValid = jwtAdapter.validateToken(token);
 
@@ -52,8 +54,9 @@ class JwtAdapterTest {
     void shouldExtractUserIdFromToken() {
         Long expectedUserId = 5L;
         String roleName = "OWNER";
+        String email = "andresaya@gmail.com";
 
-        String token = jwtAdapter.generateToken(expectedUserId, roleName);
+        String token = jwtAdapter.generateToken(expectedUserId, roleName,email);
 
         Long userId = jwtAdapter.getUserId(token);
 
@@ -63,8 +66,9 @@ class JwtAdapterTest {
     @Test
     void shouldExtractRolFromToken() {
         String expectedRole = "OWNER";
+        String email = "andresaya@gmail.com";
 
-        String token = jwtAdapter.generateToken(10L, expectedRole);
+        String token = jwtAdapter.generateToken(10L, expectedRole, email);
 
         String role = jwtAdapter.getRol(token);
 

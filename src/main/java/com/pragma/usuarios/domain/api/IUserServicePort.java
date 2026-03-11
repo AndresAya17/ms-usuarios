@@ -12,4 +12,6 @@ public interface IUserServicePort {
     void saveEmployee(User employee, Long restaurantId, Long userId);
 
     String getPhone(Long userId);
+
+    String getEmail(Long userId);
 }

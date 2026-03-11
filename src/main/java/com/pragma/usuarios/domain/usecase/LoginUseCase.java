@@ -34,7 +34,8 @@ public class LoginUseCase implements ILoginServicePort {
 
         String token = jwtPersistencePort.generateToken(
                 user.getId(),
-                user.getRol().getName()
+                user.getRol().getName(),
+                user.getEmail()
         );
 
 
